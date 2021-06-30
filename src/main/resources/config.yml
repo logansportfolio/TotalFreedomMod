@@ -91,8 +91,8 @@ ptero:
   url: ''
   # The default email domain used to set email addresses for new users - do not include the @
   default_email_domain: 'example.com'
-  # Short Server UUID (for example: a538a220)
-  # Do NOT give the long Server UUID
+  # Long Server UUID (for example: abf9a712-6c5a-4504-b4bc-37f1061b8801)
+  # Do NOT give the short Server UUID
   server_uuid: ''
   # Admin panel API key
   # Create this key by going to Settings > Application API > Create New
