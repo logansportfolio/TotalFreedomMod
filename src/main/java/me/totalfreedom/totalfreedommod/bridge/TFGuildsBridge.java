@@ -30,13 +30,10 @@ public class TFGuildsBridge extends FreedomService
         try
         {
             final Plugin tfGuilds = server.getPluginManager().getPlugin("TFGuilds");
-            if (tfGuilds != null && tfGuilds.isEnabled())
+            if (tfGuilds != null && tfGuilds.isEnabled() && tfGuilds instanceof TFGuilds)
             {
-                if (tfGuilds instanceof TFGuilds)
-                {
-                    enabled = true;
-                    return true;
-                }
+                enabled = true;
+                return true;
             }
         }
         catch (NoClassDefFoundError ex)
