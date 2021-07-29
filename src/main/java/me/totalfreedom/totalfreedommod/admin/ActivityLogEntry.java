@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
 import me.totalfreedom.totalfreedommod.config.IConfig;
 import me.totalfreedom.totalfreedommod.util.FUtil;
 import org.apache.commons.lang.Validate;
@@ -18,17 +20,20 @@ public class ActivityLogEntry implements IConfig
     private final List<String> timestamps = Lists.newArrayList();
     private final List<String> durations = Lists.newArrayList();
     private String configKey;
-    private String name;
 
     public ActivityLogEntry(Player player)
     {
-        this.configKey = player.getName().toLowerCase();
-        this.name = player.getName();
+        this.configKey = player.getUniqueId().toString();
     }
 
-    public ActivityLogEntry(String configKey)
+    public ActivityLogEntry(UUID uuid)
     {
-        this.configKey = configKey;
+        this.configKey = uuid.toString();
+    }
+
+    public ActivityLogEntry(String uuid)
+    {
+        this.configKey = uuid;
     }
 
     public static String getFILENAME()
@@ -39,13 +44,11 @@ public class ActivityLogEntry implements IConfig
     public void loadFrom(Player player)
     {
         configKey = player.getName().toLowerCase();
-        name = player.getName();
     }
 
     @Override
     public void loadFrom(ConfigurationSection cs)
     {
-        name = cs.getString("username", configKey);
         ips.clear();
         ips.addAll(cs.getStringList("ips"));
         timestamps.clear();
@@ -57,8 +60,8 @@ public class ActivityLogEntry implements IConfig
     @Override
     public void saveTo(ConfigurationSection cs)
     {
-        Validate.isTrue(isValid(), "Could not save activity entry: " + name + ". Entry not valid!");
-        cs.set("username", name);
+        Validate.isTrue(isValid(), "Could not save activity entry: " + getUUID() + ". Entry not valid!");
+        cs.set("uuid", getUUID().toString());
         cs.set("ips", Lists.newArrayList(ips));
         cs.set("timestamps", Lists.newArrayList(timestamps));
         cs.set("durations", Lists.newArrayList(durations));
@@ -73,11 +76,11 @@ public class ActivityLogEntry implements IConfig
     public void addLogout()
     {
         // Fix of Array index out of bonds issue: FS-131
-        String lastLoginString;
+        String lastLoginString = "";
         if(timestamps.size() > 1)
         {
             lastLoginString = timestamps.get(timestamps.size() - 1);
-        }else
+        } else if (timestamps.size() == 1)
         {
             lastLoginString = timestamps.get(0);
         }
@@ -136,7 +139,7 @@ public class ActivityLogEntry implements IConfig
     public boolean isValid()
     {
         return configKey != null
-                && name != null;
+                && getUUID() != null;
     }
 
     public String getConfigKey()
@@ -147,16 +150,6 @@ public class ActivityLogEntry implements IConfig
     public void setConfigKey(String configKey)
     {
         this.configKey = configKey;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
     public List<String> getIps()
@@ -172,5 +165,13 @@ public class ActivityLogEntry implements IConfig
     public List<String> getDurations()
     {
         return durations;
+    }
+
+    public UUID getUUID() {
+        return UUID.fromString(configKey);
+    }
+
+    public String getName() {
+        return FUtil.getNameFromUUID(getUUID());
     }
 }

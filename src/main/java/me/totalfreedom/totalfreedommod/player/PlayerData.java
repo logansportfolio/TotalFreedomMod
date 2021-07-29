@@ -3,10 +3,8 @@ package me.totalfreedom.totalfreedommod.player;
 import com.google.common.collect.Lists;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import me.totalfreedom.totalfreedommod.TotalFreedomMod;
 import me.totalfreedom.totalfreedommod.shop.ShopItem;
 import me.totalfreedom.totalfreedommod.util.FLog;
@@ -20,7 +18,7 @@ public class PlayerData
     private final List<String> ips = Lists.newArrayList();
     private final List<String> notes = Lists.newArrayList();
     private final List<String> backupCodes = Lists.newArrayList();
-    private String name;
+    private UUID uuid;
     private String tag = null;
     private String discordID = null;
     private Boolean masterBuilder = false;
@@ -48,7 +46,7 @@ public class PlayerData
     {
         try
         {
-            name = resultSet.getString("username");
+            uuid = UUID.fromString(resultSet.getString("uuid"));
             ips.clear();
             ips.addAll(FUtil.stringToList(resultSet.getString("ips")));
             notes.clear();
@@ -88,14 +86,13 @@ public class PlayerData
 
     public PlayerData(Player player)
     {
-        this.name = player.getName();
+        this.uuid = player.getUniqueId();
     }
 
     @Override
     public String toString()
     {
-
-        return "Player: " + name + "\n" +
+        return "Player: " + uuid.toString() + "\n" +
                 "- IPs: " + StringUtils.join(ips, ", ") + "\n" +
                 "- Discord ID: " + discordID + "\n" +
                 "- Master Builder: " + masterBuilder + "\n" +
@@ -232,7 +229,7 @@ public class PlayerData
     {
         return new HashMap<String, Object>()
         {{
-            put("username", name);
+            put("uuid", uuid);
             put("ips", FUtil.listToString(ips));
             put("notes", FUtil.listToString(notes));
             put("tag", tag);
@@ -255,14 +252,14 @@ public class PlayerData
         return displayDiscord;
     }
 
-    public String getName()
+    public UUID getUniqueId()
     {
-        return name;
+        return uuid;
     }
 
-    public void setName(String name)
+    public void setUniqueId(UUID uuid)
     {
-        this.name = name;
+        this.uuid = uuid;
     }
 
     public String getTag()
@@ -363,5 +360,10 @@ public class PlayerData
     public void setInspect(Boolean inspect)
     {
         this.inspect = inspect;
+    }
+
+    public String getName()
+    {
+        return FUtil.getNameFromUUID(uuid);
     }
 }

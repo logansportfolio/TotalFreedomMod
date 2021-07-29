@@ -3,6 +3,7 @@ package me.totalfreedom.totalfreedommod.command;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 import me.totalfreedom.totalfreedommod.player.PlayerData;
 import me.totalfreedom.totalfreedommod.rank.Rank;
+import me.totalfreedom.totalfreedommod.util.FUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -38,7 +39,7 @@ public class Command_settotalvotes extends FreedomCommand
             return true;
         }
 
-        PlayerData playerData = plugin.pl.getData(args[1]);
+        PlayerData playerData = plugin.pl.getData(FUtil.getUUIDFromName(args[1]));
 
         if (playerData == null)
         {

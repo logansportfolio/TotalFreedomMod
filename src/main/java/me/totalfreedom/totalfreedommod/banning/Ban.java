@@ -19,6 +19,8 @@ import org.bukkit.entity.Player;
 public class Ban
 {
 
+    //TODO: fuck your usernames and getting by ips, bans will be in uuid maybe soon tm idk
+
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
     private final List<String> ips = Lists.newArrayList();
     private String username = null;

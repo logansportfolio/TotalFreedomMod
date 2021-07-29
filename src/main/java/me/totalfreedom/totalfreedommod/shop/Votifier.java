@@ -37,7 +37,7 @@ public class Votifier extends FreedomService
         }
         else
         {
-            data = plugin.pl.getData(name);
+            data = plugin.pl.getData(FUtil.getUUIDFromName(name));
         }
 
         if (data != null)

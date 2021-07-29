@@ -46,7 +46,7 @@ public class Command_tban extends FreedomCommand
         final PlayerData entry;
         if (player == null)
         {
-            entry = plugin.pl.getData(args[0]);
+            entry = plugin.pl.getData(FUtil.getUUIDFromName(args[0]));
 
             if (entry == null)
             {

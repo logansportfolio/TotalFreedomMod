@@ -12,6 +12,7 @@ import me.totalfreedom.totalfreedommod.FreedomService;
 import me.totalfreedom.totalfreedommod.admin.Admin;
 import me.totalfreedom.totalfreedommod.rank.Rank;
 import me.totalfreedom.totalfreedommod.util.FLog;
+import me.totalfreedom.totalfreedommod.util.FUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -126,7 +127,7 @@ public class BukkitTelnetBridge extends FreedomService
         {
             for (ClientSession session : telnet.appender.getSessions())
             {
-                Admin admin = plugin.al.getEntryByName(session.getUserName().toLowerCase());
+                Admin admin = plugin.al.getEntryByUUID(FUtil.getUUIDFromName(session.getUserName()));
                 if (admin != null && !admins.contains(admin))
                 {
                     admins.add(admin);

@@ -2,6 +2,8 @@ package me.totalfreedom.totalfreedommod;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 import me.totalfreedom.totalfreedommod.player.FPlayer;
 import me.totalfreedom.totalfreedommod.util.FLog;
@@ -18,7 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class Muter extends FreedomService
 {
 
-    public final List<String> MUTED_PLAYERS = new ArrayList<>();
+    public final List<UUID> MUTED_PLAYERS = new ArrayList<>();
 
     @Override
     public void onStart()
@@ -45,7 +47,7 @@ public class Muter extends FreedomService
         if (plugin.al.isAdminSync(player))
         {
             fPlayer.setMuted(false);
-            MUTED_PLAYERS.remove(player.getName());
+            MUTED_PLAYERS.remove(player.getUniqueId());
             return;
         }
 
@@ -105,7 +107,7 @@ public class Muter extends FreedomService
         Player player = event.getPlayer();
         FPlayer playerdata = plugin.pl.getPlayer(player);
 
-        if (MUTED_PLAYERS.contains(player.getName()))
+        if (MUTED_PLAYERS.contains(player.getUniqueId()))
         {
             playerdata.setMuted(true);
         }

@@ -42,7 +42,7 @@ public class Command_manageshop extends FreedomCommand
                         int amount = Math.max(0, Math.min(1000000, Integer.parseInt(args[2])));
                         if (!args[3].equals("all"))
                         {
-                            PlayerData playerData = plugin.pl.getData(args[3]);
+                            PlayerData playerData = plugin.pl.getData(FUtil.getUUIDFromName(args[3]));
                             if (playerData == null)
                             {
                                 msg(PLAYER_NOT_FOUND);
@@ -83,7 +83,7 @@ public class Command_manageshop extends FreedomCommand
                         int amount = Math.max(0, Math.min(1000000, Integer.parseInt(args[2])));
                         if (!args[3].equals("all"))
                         {
-                            PlayerData playerData = plugin.pl.getData(args[3]);
+                            PlayerData playerData = plugin.pl.getData(FUtil.getUUIDFromName(args[3]));
                             if (playerData == null)
                             {
                                 msg(PLAYER_NOT_FOUND);
@@ -130,7 +130,7 @@ public class Command_manageshop extends FreedomCommand
                     try
                     {
                         int amount = Math.max(0, Math.min(1000000, Integer.parseInt(args[2])));
-                        PlayerData playerData = plugin.pl.getData(args[3]);
+                        PlayerData playerData = plugin.pl.getData(FUtil.getUUIDFromName(args[3]));
                         if (playerData == null)
                         {
                             msg(PLAYER_NOT_FOUND);
@@ -180,7 +180,7 @@ public class Command_manageshop extends FreedomCommand
                     return true;
                 }
 
-                PlayerData playerData = plugin.pl.getData(args[3]);
+                PlayerData playerData = plugin.pl.getData(FUtil.getUUIDFromName(args[3]));
                 if (playerData == null)
                 {
                     msg(PLAYER_NOT_FOUND);
@@ -205,7 +205,7 @@ public class Command_manageshop extends FreedomCommand
                     return true;
                 }
 
-                PlayerData playerData = plugin.pl.getData(args[3]);
+                PlayerData playerData = plugin.pl.getData(FUtil.getUUIDFromName(args[3]));
                 if (playerData == null)
                 {
                     msg(PLAYER_NOT_FOUND);

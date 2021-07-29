@@ -2,6 +2,8 @@ package me.totalfreedom.totalfreedommod.admin;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.UUID;
+
 import me.totalfreedom.totalfreedommod.FreedomService;
 import me.totalfreedom.totalfreedommod.config.YamlConfig;
 import me.totalfreedom.totalfreedommod.util.FLog;
@@ -14,13 +16,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+//TODO: convert to uuids
 public class ActivityLog extends FreedomService
 {
 
     public static final String FILENAME = "activitylog.yml";
 
-    private final Map<String, ActivityLogEntry> allActivityLogs = Maps.newHashMap();
-    private final Map<String, ActivityLogEntry> nameTable = Maps.newHashMap();
+    private final Map<UUID, ActivityLogEntry> allActivityLogs = Maps.newHashMap();
+    private final Map<UUID, ActivityLogEntry> activityLogs = Maps.newHashMap();
     private final Map<String, ActivityLogEntry> ipTable = Maps.newHashMap();
 
     private final YamlConfig config;
@@ -52,7 +55,7 @@ public class ActivityLog extends FreedomService
         config.load();
 
         allActivityLogs.clear();
-        nameTable.clear();
+        activityLogs.clear();
         ipTable.clear();
         for (String key : config.getKeys(false))
         {
@@ -72,7 +75,7 @@ public class ActivityLog extends FreedomService
                 continue;
             }
 
-            allActivityLogs.put(key, activityLogEntry);
+            allActivityLogs.put(UUID.fromString(key), activityLogEntry);
         }
 
         updateTables();
@@ -102,12 +105,12 @@ public class ActivityLog extends FreedomService
             return getActivityLog((Player)sender);
         }
 
-        return getEntryByName(sender.getName());
+        return getEntryByUUID(FUtil.getUUIDFromName(sender.getName()));
     }
 
     public ActivityLogEntry getActivityLog(Player player)
     {
-        ActivityLogEntry activityLog = getEntryByName(player.getName());
+        ActivityLogEntry activityLog = getEntryByUUID(player.getUniqueId());
         if (activityLog == null)
         {
             String ip = FUtil.getIp(player);
@@ -115,14 +118,13 @@ public class ActivityLog extends FreedomService
             if (activityLog != null)
             {
                 // Set the new username
-                activityLog.setName(player.getName());
                 save();
                 updateTables();
             }
             else
             {
                 activityLog = new ActivityLogEntry(player);
-                allActivityLogs.put(activityLog.getConfigKey(), activityLog);
+                allActivityLogs.put(activityLog.getUUID(), activityLog);
                 updateTables();
 
                 activityLog.saveTo(config.createSection(activityLog.getConfigKey()));
@@ -139,9 +141,9 @@ public class ActivityLog extends FreedomService
         return activityLog;
     }
 
-    public ActivityLogEntry getEntryByName(String name)
+    public ActivityLogEntry getEntryByUUID(UUID uuid)
     {
-        return nameTable.get(name.toLowerCase());
+        return activityLogs.get(uuid);
     }
 
     public ActivityLogEntry getEntryByIp(String ip)
@@ -151,12 +153,12 @@ public class ActivityLog extends FreedomService
 
     public void updateTables()
     {
-        nameTable.clear();
+        activityLogs.clear();
         ipTable.clear();
 
         for (ActivityLogEntry activityLog : allActivityLogs.values())
         {
-            nameTable.put(activityLog.getName().toLowerCase(), activityLog);
+            activityLogs.put(activityLog.getUUID(), activityLog);
 
             for (String ip : activityLog.getIps())
             {
@@ -190,14 +192,14 @@ public class ActivityLog extends FreedomService
         }
     }
 
-    public Map<String, ActivityLogEntry> getAllActivityLogs()
+    public Map<UUID, ActivityLogEntry> getAllActivityLogs()
     {
         return allActivityLogs;
     }
 
-    public Map<String, ActivityLogEntry> getNameTable()
+    public Map<UUID, ActivityLogEntry> getActivityLogs()
     {
-        return nameTable;
+        return activityLogs;
     }
 
     public Map<String, ActivityLogEntry> getIpTable()

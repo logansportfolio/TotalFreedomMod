@@ -52,7 +52,7 @@ public class WorldRestrictions extends FreedomService
 
     public boolean doRestrict(Player player)
     {
-        if (!plugin.pl.getData(player).isMasterBuilder() && plugin.pl.canManageMasterBuilders(player.getName()))
+        if (!plugin.pl.getData(player).isMasterBuilder() && plugin.pl.canManageMasterBuilders(player.getUniqueId()))
         {
             if (player.getWorld().equals(plugin.wm.masterBuilderWorld.getWorld()))
             {

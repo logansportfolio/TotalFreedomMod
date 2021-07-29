@@ -24,7 +24,7 @@ public class PrivateMessageListener extends ListenerAdapter
                     player.setDiscordID(event.getMessage().getAuthor().getId());
                     player.setVerification(true);
 
-                    Admin admin = TotalFreedomMod.getPlugin().al.getEntryByName(name);
+                    Admin admin = TotalFreedomMod.getPlugin().al.getEntryByUUID(player.getUniqueId());
                     if (admin != null)
                     {
                         Discord.syncRoles(admin, player.getDiscordID());

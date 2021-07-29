@@ -31,7 +31,7 @@ public class Command_notes extends FreedomCommand
         final Player player = getPlayer(args[0]);
         if (player == null)
         {
-            final PlayerData entry = plugin.pl.getData(args[0]);
+            final PlayerData entry = plugin.pl.getData(FUtil.getUUIDFromName(args[0]));
 
             if (entry == null)
             {
@@ -39,7 +39,7 @@ public class Command_notes extends FreedomCommand
                 return true;
             }
 
-            playerData = plugin.pl.getData(entry.getName());
+            playerData = entry;
         }
         else
         {

@@ -16,23 +16,22 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class FPlayer
-{
+public class FPlayer {
 
     public static final long AUTO_PURGE_TICKS = 5L * 60L * 20L;
 
 
     private final TotalFreedomMod plugin;
 
-    private final String name;
-
-    private final String ip;
+    private final UUID uuid;
     //
     private final FreezeData freezeData = new FreezeData(this);
     private final CageData cageData = new CageData(this);
     private final List<LivingEntity> mobThrowerQueue = new ArrayList<>();
     private Player player;
+    private PlayerData playerData;
     //
     private BukkitTask unmuteTask;
     private double fuckoffRadius = 0;
@@ -71,376 +70,295 @@ public class FPlayer
 
     private boolean invSee = false;
 
-    public FPlayer(TotalFreedomMod plugin, Player player)
-    {
-        this(plugin, player.getName(), FUtil.getIp(player));
+
+    public FPlayer(TotalFreedomMod plugin, Player player) {
+        this(plugin, player.getUniqueId());
     }
 
-    private FPlayer(TotalFreedomMod plugin, String name, String ip)
-    {
+    private FPlayer(TotalFreedomMod plugin, UUID uuid) {
         this.plugin = plugin;
-        this.name = name;
-        this.ip = ip;
+        this.uuid = uuid;
     }
 
-    public static long getAutoPurgeTicks()
-    {
+    public static long getAutoPurgeTicks() {
         return AUTO_PURGE_TICKS;
     }
 
-    public Player getPlayer()
-    {
-        if (player != null && !player.isOnline())
-        {
-            player = null;
-        }
-
-        if (player == null)
-        {
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers())
-            {
-                if (FUtil.getIp(onlinePlayer).equals(ip))
-                {
-                    player = onlinePlayer;
-                    break;
+    public Player getPlayer() {
+        if (this.player == null) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.getUniqueId().equals(this.uuid)) {
+                    this.player = onlinePlayer;
                 }
             }
         }
 
-        return player;
+        return this.player;
     }
 
-    public void setPlayer(Player player)
-    {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 
-    public boolean isOrbiting()
-    {
+    public boolean isOrbiting() {
         return isOrbiting;
     }
 
-    public void setOrbiting(boolean orbiting)
-    {
+    public void setOrbiting(boolean orbiting) {
         isOrbiting = orbiting;
     }
 
-    public void startOrbiting(double strength)
-    {
+    public void startOrbiting(double strength) {
         this.isOrbiting = true;
         this.orbitStrength = strength;
     }
 
-    public void stopOrbiting()
-    {
+    public void stopOrbiting() {
         this.isOrbiting = false;
     }
 
-    public double orbitStrength()
-    {
+    public double orbitStrength() {
         return orbitStrength;
     }
 
-    public boolean isFuckOff()
-    {
+    public boolean isFuckOff() {
         return fuckoffRadius > 0;
     }
 
-    public void setFuckoff(double radius)
-    {
+    public void setFuckoff(double radius) {
         this.fuckoffRadius = radius;
     }
 
-    public void disableFuckoff()
-    {
+    public void disableFuckoff() {
         this.fuckoffRadius = 0;
     }
 
-    public void resetMsgCount()
-    {
+    public void resetMsgCount() {
         this.messageCount = 0;
     }
 
-    public int incrementAndGetMsgCount()
-    {
+    public int incrementAndGetMsgCount() {
         return this.messageCount++;
     }
 
-    public int incrementAndGetBlockDestroyCount()
-    {
+    public int incrementAndGetBlockDestroyCount() {
         return this.totalBlockDestroy++;
     }
 
-    public void resetBlockDestroyCount()
-    {
+    public void resetBlockDestroyCount() {
         this.totalBlockDestroy = 0;
     }
 
-    public int incrementAndGetBlockPlaceCount()
-    {
+    public int incrementAndGetBlockPlaceCount() {
         return this.totalBlockPlace++;
     }
 
-    public void resetBlockPlaceCount()
-    {
+    public void resetBlockPlaceCount() {
         this.totalBlockPlace = 0;
     }
 
-    public int incrementAndGetFreecamDestroyCount()
-    {
+    public int incrementAndGetFreecamDestroyCount() {
         return this.freecamDestroyCount++;
     }
 
-    public void resetFreecamDestroyCount()
-    {
+    public void resetFreecamDestroyCount() {
         this.freecamDestroyCount = 0;
     }
 
-    public int incrementAndGetFreecamPlaceCount()
-    {
+    public int incrementAndGetFreecamPlaceCount() {
         return this.freecamPlaceCount++;
     }
 
-    public void resetFreecamPlaceCount()
-    {
+    public void resetFreecamPlaceCount() {
         this.freecamPlaceCount = 0;
     }
 
-    public void enableMobThrower(EntityType mobThrowerCreature, double mobThrowerSpeed)
-    {
+    public void enableMobThrower(EntityType mobThrowerCreature, double mobThrowerSpeed) {
         this.mobThrowerEnabled = true;
         this.mobThrowerEntity = mobThrowerCreature;
         this.mobThrowerSpeed = mobThrowerSpeed;
     }
 
-    public void disableMobThrower()
-    {
+    public void disableMobThrower() {
         this.mobThrowerEnabled = false;
     }
 
-    public EntityType mobThrowerCreature()
-    {
+    public EntityType mobThrowerCreature() {
         return this.mobThrowerEntity;
     }
 
-    public double mobThrowerSpeed()
-    {
+    public double mobThrowerSpeed() {
         return this.mobThrowerSpeed;
     }
 
-    public boolean mobThrowerEnabled()
-    {
+    public boolean mobThrowerEnabled() {
         return this.mobThrowerEnabled;
     }
 
-    public void enqueueMob(LivingEntity mob)
-    {
+    public void enqueueMob(LivingEntity mob) {
         mobThrowerQueue.add(mob);
-        if (mobThrowerQueue.size() > 4)
-        {
+        if (mobThrowerQueue.size() > 4) {
             LivingEntity oldmob = mobThrowerQueue.remove(0);
-            if (oldmob != null)
-            {
+            if (oldmob != null) {
                 oldmob.damage(500.0);
             }
         }
     }
 
-    public void startArrowShooter(TotalFreedomMod plugin)
-    {
+    public void startArrowShooter(TotalFreedomMod plugin) {
         this.stopArrowShooter();
         this.mp44ScheduleTask = new ArrowShooter(getPlayer()).runTaskTimer(plugin, 1L, 1L);
         this.mp44Firing = true;
     }
 
-    public void stopArrowShooter()
-    {
-        if (this.mp44ScheduleTask != null)
-        {
+    public void stopArrowShooter() {
+        if (this.mp44ScheduleTask != null) {
             this.mp44ScheduleTask.cancel();
             this.mp44ScheduleTask = null;
         }
         this.mp44Firing = false;
     }
 
-    public void armMP44()
-    {
+    public void armMP44() {
         this.mp44Armed = true;
         this.stopArrowShooter();
     }
 
-    public void disarmMP44()
-    {
+    public void disarmMP44() {
         this.mp44Armed = false;
         this.stopArrowShooter();
     }
 
-    public boolean isMP44Armed()
-    {
+    public boolean isMP44Armed() {
         return this.mp44Armed;
     }
 
-    public boolean toggleMP44Firing()
-    {
+    public boolean toggleMP44Firing() {
         this.mp44Firing = !this.mp44Firing;
         return mp44Firing;
     }
 
-    public boolean isMuted()
-    {
+    public boolean isMuted() {
         return unmuteTask != null;
     }
 
-    public void setMuted(boolean muted, int minutes)
-    {
+    public void setMuted(boolean muted, int minutes) {
         FUtil.cancel(unmuteTask);
-        plugin.mu.MUTED_PLAYERS.remove(getPlayer().getName());
+        plugin.mu.MUTED_PLAYERS.remove(getPlayer().getUniqueId());
         unmuteTask = null;
 
-        if (!muted)
-        {
+        if (!muted) {
             return;
         }
 
-        if (getPlayer() == null)
-        {
+        if (getPlayer() == null) {
             return;
         }
 
-        plugin.mu.MUTED_PLAYERS.add(getPlayer().getName());
+        plugin.mu.MUTED_PLAYERS.add(getPlayer().getUniqueId());
 
         // TODO: Simplify this into a Consumer<BukkitTask> lambda?
-        unmuteTask = new BukkitRunnable()
-        {
+        unmuteTask = new BukkitRunnable() {
             @Override
-            public void run()
-            {
-                if (getPlayer() != null)
-                {
+            public void run() {
+                if (getPlayer() != null) {
                     FUtil.adminAction(ConfigEntry.SERVER_NAME.getString(), "Unmuting " + getPlayer().getName(), false);
                     setMuted(false);
-                }
-                else
-                {
-                    FUtil.adminAction(ConfigEntry.SERVER_NAME.getString(), "Unmuting " + getName(), false);
-                    plugin.mu.MUTED_PLAYERS.remove(getName());
+                } else {
+                    FUtil.adminAction(ConfigEntry.SERVER_NAME.getString(), "Unmuting " + Bukkit.getOfflinePlayer(uuid).getName(), false);
+                    plugin.mu.MUTED_PLAYERS.remove(uuid);
                 }
             }
         }.runTaskLater(plugin, minutes * (60L * 20L));
     }
 
-    public void setMuted(boolean muted)
-    {
+    public void setMuted(boolean muted) {
         setMuted(muted, 5);
     }
 
-    public BukkitTask getLockupScheduleID()
-    {
+    public BukkitTask getLockupScheduleID() {
         return this.lockupScheduleTask;
     }
 
-    public void setLockupScheduleId(BukkitTask id)
-    {
+    public void setLockupScheduleId(BukkitTask id) {
         this.lockupScheduleTask = id;
     }
 
-    public boolean isLockedUp()
-    {
+    public boolean isLockedUp() {
         return this.lockedUp;
     }
 
-    public void setLockedUp(boolean lockedUp)
-    {
+    public void setLockedUp(boolean lockedUp) {
         this.lockedUp = lockedUp;
     }
 
-    public String getLastMessage()
-    {
+    public String getLastMessage() {
         return lastMessage;
     }
 
-    public void setLastMessage(String message)
-    {
+    public void setLastMessage(String message) {
         this.lastMessage = message;
     }
 
-    public void setAdminChat(boolean inAdminchat)
-    {
+    public void setAdminChat(boolean inAdminchat) {
         this.inAdminchat = inAdminchat;
     }
 
-    public boolean inAdminChat()
-    {
+    public boolean inAdminChat() {
         return this.inAdminchat;
     }
 
-    public boolean allCommandsBlocked()
-    {
+    public boolean allCommandsBlocked() {
         return this.allCommandsBlocked;
     }
 
-    public void setCommandsBlocked(boolean commandsBlocked)
-    {
+    public void setCommandsBlocked(boolean commandsBlocked) {
         this.allCommandsBlocked = commandsBlocked;
     }
 
-    public String getLastCommand()
-    {
+    public String getLastCommand() {
         return lastCommand;
     }
 
-    public void setLastCommand(String lastCommand)
-    {
+    public void setLastCommand(String lastCommand) {
         this.lastCommand = lastCommand;
     }
 
-    public void setCommandSpy(boolean enabled)
-    {
+    public void setCommandSpy(boolean enabled) {
         this.cmdspyEnabled = enabled;
     }
 
-    public boolean cmdspyEnabled()
-    {
+    public boolean cmdspyEnabled() {
         return cmdspyEnabled;
     }
 
-    public String getTag()
-    {
+    public String getTag() {
         return this.tag;
     }
 
-    public void setTag(String tag)
-    {
-        if (tag == null)
-        {
+    public void setTag(String tag) {
+        if (tag == null) {
             this.tag = null;
-        }
-        else
-        {
+        } else {
             this.tag = FUtil.colorize(tag) + ChatColor.WHITE;
         }
     }
 
-    public int getWarningCount()
-    {
+    public int getWarningCount() {
         return this.warningCount;
     }
 
-    public void setWarningCount(int warningCount)
-    {
+    public void setWarningCount(int warningCount) {
         this.warningCount = warningCount;
     }
 
-    public void incrementWarnings(boolean quiet)
-    {
+    public void incrementWarnings(boolean quiet) {
         this.warningCount++;
 
-        if (this.warningCount % 2 == 0)
-        {
+        if (this.warningCount % 2 == 0) {
             Player p = getPlayer();
 
-            if (!quiet)
-            {
+            if (!quiet) {
                 p.getWorld().strikeLightning(p.getLocation());
             }
 
@@ -448,271 +366,221 @@ public class FPlayer
         }
     }
 
-    public TotalFreedomMod getPlugin()
-    {
+    public TotalFreedomMod getPlugin() {
         return plugin;
     }
 
-    public String getName()
-    {
-        return name;
+    public UUID getUniqueId() {
+        return uuid;
     }
 
-    public String getIp()
-    {
-        return ip;
+    public PlayerData getPlayerData() {
+        return playerData;
     }
 
-    public BukkitTask getUnmuteTask()
-    {
+    public BukkitTask getUnmuteTask() {
         return unmuteTask;
     }
 
-    public void setUnmuteTask(BukkitTask unmuteTask)
-    {
+    public void setUnmuteTask(BukkitTask unmuteTask) {
         this.unmuteTask = unmuteTask;
     }
 
-    public FreezeData getFreezeData()
-    {
+    public FreezeData getFreezeData() {
         return freezeData;
     }
 
-    public double getFuckoffRadius()
-    {
+    public double getFuckoffRadius() {
         return fuckoffRadius;
     }
 
-    public void setFuckoffRadius(double fuckoffRadius)
-    {
+    public void setFuckoffRadius(double fuckoffRadius) {
         this.fuckoffRadius = fuckoffRadius;
     }
 
-    public int getMessageCount()
-    {
+    public int getMessageCount() {
         return messageCount;
     }
 
-    public void setMessageCount(int messageCount)
-    {
+    public void setMessageCount(int messageCount) {
         this.messageCount = messageCount;
     }
 
-    public int getTotalBlockDestroy()
-    {
+    public int getTotalBlockDestroy() {
         return totalBlockDestroy;
     }
 
-    public void setTotalBlockDestroy(int totalBlockDestroy)
-    {
+    public void setTotalBlockDestroy(int totalBlockDestroy) {
         this.totalBlockDestroy = totalBlockDestroy;
     }
 
-    public int getTotalBlockPlace()
-    {
+    public int getTotalBlockPlace() {
         return totalBlockPlace;
     }
 
-    public void setTotalBlockPlace(int totalBlockPlace)
-    {
+    public void setTotalBlockPlace(int totalBlockPlace) {
         this.totalBlockPlace = totalBlockPlace;
     }
 
-    public int getFreecamDestroyCount()
-    {
+    public int getFreecamDestroyCount() {
         return freecamDestroyCount;
     }
 
-    public void setFreecamDestroyCount(int freecamDestroyCount)
-    {
+    public void setFreecamDestroyCount(int freecamDestroyCount) {
         this.freecamDestroyCount = freecamDestroyCount;
     }
 
-    public int getFreecamPlaceCount()
-    {
+    public int getFreecamPlaceCount() {
         return freecamPlaceCount;
     }
 
-    public void setFreecamPlaceCount(int freecamPlaceCount)
-    {
+    public void setFreecamPlaceCount(int freecamPlaceCount) {
         this.freecamPlaceCount = freecamPlaceCount;
     }
 
-    public CageData getCageData()
-    {
+    public CageData getCageData() {
         return cageData;
     }
 
-    public double getOrbitStrength()
-    {
+    public double getOrbitStrength() {
         return orbitStrength;
     }
 
-    public void setOrbitStrength(double orbitStrength)
-    {
+    public void setOrbitStrength(double orbitStrength) {
         this.orbitStrength = orbitStrength;
     }
 
-    public boolean isMobThrowerEnabled()
-    {
+    public boolean isMobThrowerEnabled() {
         return mobThrowerEnabled;
     }
 
-    public void setMobThrowerEnabled(boolean mobThrowerEnabled)
-    {
+    public void setMobThrowerEnabled(boolean mobThrowerEnabled) {
         this.mobThrowerEnabled = mobThrowerEnabled;
     }
 
-    public EntityType getMobThrowerEntity()
-    {
+    public EntityType getMobThrowerEntity() {
         return mobThrowerEntity;
     }
 
-    public void setMobThrowerEntity(EntityType mobThrowerEntity)
-    {
+    public void setMobThrowerEntity(EntityType mobThrowerEntity) {
         this.mobThrowerEntity = mobThrowerEntity;
     }
 
-    public double getMobThrowerSpeed()
-    {
+    public double getMobThrowerSpeed() {
         return mobThrowerSpeed;
     }
 
-    public void setMobThrowerSpeed(double mobThrowerSpeed)
-    {
+    public void setPlayerData(PlayerData playerData) {
+        this.playerData = playerData;
+    }
+
+    public void setMobThrowerSpeed(double mobThrowerSpeed) {
         this.mobThrowerSpeed = mobThrowerSpeed;
     }
 
-    public List<LivingEntity> getMobThrowerQueue()
-    {
+    public List<LivingEntity> getMobThrowerQueue() {
         return mobThrowerQueue;
     }
 
-    public BukkitTask getMp44ScheduleTask()
-    {
+    public BukkitTask getMp44ScheduleTask() {
         return mp44ScheduleTask;
     }
 
-    public void setMp44ScheduleTask(BukkitTask mp44ScheduleTask)
-    {
+    public void setMp44ScheduleTask(BukkitTask mp44ScheduleTask) {
         this.mp44ScheduleTask = mp44ScheduleTask;
     }
 
-    public boolean isMp44Armed()
-    {
+    public boolean isMp44Armed() {
         return mp44Armed;
     }
 
-    public void setMp44Armed(boolean mp44Armed)
-    {
+    public void setMp44Armed(boolean mp44Armed) {
         this.mp44Armed = mp44Armed;
     }
 
-    public boolean isMp44Firing()
-    {
+    public boolean isMp44Firing() {
         return mp44Firing;
     }
 
-    public void setMp44Firing(boolean mp44Firing)
-    {
+    public void setMp44Firing(boolean mp44Firing) {
         this.mp44Firing = mp44Firing;
     }
 
-    public BukkitTask getLockupScheduleTask()
-    {
+    public BukkitTask getLockupScheduleTask() {
         return lockupScheduleTask;
     }
 
-    public void setLockupScheduleTask(BukkitTask lockupScheduleTask)
-    {
+    public void setLockupScheduleTask(BukkitTask lockupScheduleTask) {
         this.lockupScheduleTask = lockupScheduleTask;
     }
 
-    public boolean isInAdminchat()
-    {
+    public boolean isInAdminchat() {
         return inAdminchat;
     }
 
-    public void setInAdminchat(boolean inAdminchat)
-    {
+    public void setInAdminchat(boolean inAdminchat) {
         this.inAdminchat = inAdminchat;
     }
 
-    public boolean isAllCommandsBlocked()
-    {
+    public boolean isAllCommandsBlocked() {
         return allCommandsBlocked;
     }
 
-    public void setAllCommandsBlocked(boolean allCommandsBlocked)
-    {
+    public void setAllCommandsBlocked(boolean allCommandsBlocked) {
         this.allCommandsBlocked = allCommandsBlocked;
     }
 
-    public boolean isSuperadminIdVerified()
-    {
+    public boolean isSuperadminIdVerified() {
         return superadminIdVerified;
     }
 
-    public void setSuperadminIdVerified(boolean superadminIdVerified)
-    {
+    public void setSuperadminIdVerified(boolean superadminIdVerified) {
         this.superadminIdVerified = superadminIdVerified;
     }
 
-    public boolean isCmdspyEnabled()
-    {
+    public boolean isCmdspyEnabled() {
         return cmdspyEnabled;
     }
 
-    public void setCmdspyEnabled(boolean cmdspyEnabled)
-    {
+    public void setCmdspyEnabled(boolean cmdspyEnabled) {
         this.cmdspyEnabled = cmdspyEnabled;
     }
 
-    public boolean isEditBlocked()
-    {
+    public boolean isEditBlocked() {
         return editBlocked;
     }
 
-    public void setEditBlocked(boolean editBlocked)
-    {
+    public void setEditBlocked(boolean editBlocked) {
         this.editBlocked = editBlocked;
     }
 
-    public boolean isPvpBlocked()
-    {
+    public boolean isPvpBlocked() {
         return pvpBlocked;
     }
 
-    public void setPvpBlocked(boolean pvpBlocked)
-    {
+    public void setPvpBlocked(boolean pvpBlocked) {
         this.pvpBlocked = pvpBlocked;
     }
 
-    public boolean isInvSee()
-    {
+    public boolean isInvSee() {
         return invSee;
     }
 
-    public void setInvSee(boolean invSee)
-    {
+    public void setInvSee(boolean invSee) {
         this.invSee = invSee;
     }
 
-    private static class ArrowShooter extends BukkitRunnable
-    {
+    private static class ArrowShooter extends BukkitRunnable {
 
         private final Player player;
 
-        private ArrowShooter(Player player)
-        {
+        private ArrowShooter(Player player) {
             this.player = player;
         }
 
         @Override
-        public void run()
-        {
-            if (player != null)
-            {
+        public void run() {
+            if (player != null) {
                 Arrow shot = player.launchProjectile(Arrow.class);
                 shot.setVelocity(shot.getVelocity().multiply(2.0));
             }

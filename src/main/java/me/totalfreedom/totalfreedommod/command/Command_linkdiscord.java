@@ -3,6 +3,7 @@ package me.totalfreedom.totalfreedommod.command;
 import me.totalfreedom.totalfreedommod.discord.Discord;
 import me.totalfreedom.totalfreedommod.player.PlayerData;
 import me.totalfreedom.totalfreedommod.rank.Rank;
+import me.totalfreedom.totalfreedommod.util.FUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,7 +25,7 @@ public class Command_linkdiscord extends FreedomCommand
 
         if (args.length > 1 && plugin.al.isAdmin(playerSender))
         {
-            PlayerData playerData = plugin.pl.getData(args[0]);
+            PlayerData playerData = plugin.pl.getData(FUtil.getUUIDFromName(args[0]));
             if (playerData == null)
             {
                 msg(PLAYER_NOT_FOUND);

@@ -22,7 +22,7 @@ public class Command_unban extends FreedomCommand
         if (args.length > 0)
         {
             String username;
-            final PlayerData entry = plugin.pl.getData(args[0]);
+            final PlayerData entry = plugin.pl.getData(FUtil.getUUIDFromName(args[0]));
 
             if (entry == null)
             {

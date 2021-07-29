@@ -117,7 +117,7 @@ public class RankManager extends FreedomService
         }
 
         // Console admin, get by name
-        Admin admin = plugin.al.getEntryByName(sender.getName());
+        Admin admin = plugin.al.getEntryByUUID(FUtil.getUUIDFromName(sender.getName()));
 
         // Unknown console: RCON?
         if (admin == null)

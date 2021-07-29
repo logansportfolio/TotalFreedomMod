@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import me.totalfreedom.totalfreedommod.admin.Admin;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 import me.totalfreedom.totalfreedommod.discord.Discord;
@@ -34,7 +36,7 @@ public class Command_saconfig extends FreedomCommand
         {
             case "list":
             {
-                msg("Admins: " + StringUtils.join(plugin.al.getAdminNames(), ", "), ChatColor.GOLD);
+                msg("Admins: " + StringUtils.join(plugin.al.getAdminUUIDs().stream().map(FUtil::getNameFromUUID).collect(Collectors.toList()), ", "), ChatColor.GOLD);
                 return true;
             }
 
@@ -45,7 +47,7 @@ public class Command_saconfig extends FreedomCommand
 
                 FUtil.adminAction(sender.getName(), "Cleaning the admin list", true);
                 plugin.al.deactivateOldEntries(true);
-                msg("Admins: " + StringUtils.join(plugin.al.getAdminNames(), ", "), ChatColor.GOLD);
+                msg("Admins: " + StringUtils.join(plugin.al.getAdminUUIDs().stream().map(FUtil::getNameFromUUID).collect(Collectors.toList()), ", "), ChatColor.GOLD);
 
                 return true;
             }
@@ -89,7 +91,7 @@ public class Command_saconfig extends FreedomCommand
                     return true;
                 }
 
-                Admin admin = plugin.al.getEntryByName(args[1]);
+                Admin admin = plugin.al.getEntryByUUID(FUtil.getUUIDFromName(args[1]));
                 if (admin == null)
                 {
                     msg("Unknown admin: " + args[1]);
@@ -109,7 +111,7 @@ public class Command_saconfig extends FreedomCommand
 
                 if (plugin.dc.enabled && ConfigEntry.DISCORD_ROLE_SYNC.getBoolean())
                 {
-                    Discord.syncRoles(admin, plugin.pl.getData(admin.getName()).getDiscordID());
+                    Discord.syncRoles(admin, plugin.pl.getData(admin.getUniqueId()).getDiscordID());
                 }
 
                 plugin.ptero.updateAccountStatus(admin);
@@ -127,7 +129,7 @@ public class Command_saconfig extends FreedomCommand
 
                 checkRank(Rank.ADMIN);
 
-                Admin admin = plugin.al.getEntryByName(args[1]);
+                Admin admin = plugin.al.getEntryByUUID(FUtil.getUUIDFromName(args[1]));
 
                 if (admin == null)
                 {
@@ -206,12 +208,12 @@ public class Command_saconfig extends FreedomCommand
                 {
                     FUtil.adminAction(sender.getName(), "Re-adding " + player.getName() + " to the admin list", true);
 
-                    String oldName = admin.getName();
+                    /*String oldName = admin.getName();
                     if (!oldName.equals(player.getName()))
                     {
                         admin.setName(player.getName());
                         plugin.sql.updateAdminName(oldName, admin.getName());
-                    }
+                    }*/
                     admin.addIp(FUtil.getIp(player));
 
                     admin.setActive(true);
@@ -259,7 +261,7 @@ public class Command_saconfig extends FreedomCommand
                 checkRank(Rank.ADMIN);
 
                 Player player = getPlayer(args[1]);
-                Admin admin = player != null ? plugin.al.getAdmin(player) : plugin.al.getEntryByName(args[1]);
+                Admin admin = player != null ? plugin.al.getAdmin(player) : plugin.al.getEntryByUUID(FUtil.getUUIDFromName(args[1]));
 
                 if (admin == null)
                 {
@@ -280,7 +282,7 @@ public class Command_saconfig extends FreedomCommand
 
                 if (plugin.dc.enabled && ConfigEntry.DISCORD_ROLE_SYNC.getBoolean())
                 {
-                    Discord.syncRoles(admin, plugin.pl.getData(admin.getName()).getDiscordID());
+                    Discord.syncRoles(admin, plugin.pl.getData(admin.getUniqueId()).getDiscordID());
                 }
 
                 plugin.ptero.updateAccountStatus(admin);

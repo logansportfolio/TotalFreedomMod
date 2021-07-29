@@ -1,16 +1,18 @@
 package me.totalfreedom.totalfreedommod.util;
 
+import com.google.common.collect.Maps;
 import me.totalfreedom.totalfreedommod.TotalFreedomMod;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -19,12 +21,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.json.JSONObject;
 import org.json.simple.JSONArray;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -36,6 +40,8 @@ import static org.bukkit.Bukkit.getServer;
 
 public class FUtil
 {
+
+    private static final Map<UUID, String> NAME_CACHE = Maps.newHashMap();
 
     public static final String SAVED_FLAGS_FILENAME = "savedflags.dat";
     /* See https://github.com/TotalFreedom/License - None of the listed names may be removed.
@@ -882,5 +888,53 @@ public class FUtil
             int endIndex = Math.min(startIndex + (epp - 1), this.size() - 1);
             return subList(startIndex, endIndex + 1);
         }
+    }
+
+    public static String getNameFromUUID(UUID uuid) {
+
+        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+        if (player.hasPlayedBefore()) return player.getName();
+        if (NAME_CACHE.containsKey(uuid)) return NAME_CACHE.get(uuid);
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet get = new HttpGet("https://api.ashcon.app/mojang/v2/user/" + uuid.toString().replace("-", ""));
+        try {
+            CloseableHttpResponse response = client.execute(get);
+            String json = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+            JSONObject obj = new JSONObject(json);
+            response.close();
+            if (response.getCode() == 200) {
+                String name = NAME_CACHE.put(uuid, obj.getString("username"));
+
+                Bukkit.getScheduler().runTaskLaterAsynchronously(TotalFreedomMod.getPlugin(), () -> NAME_CACHE.remove(uuid), 20 * 60L * 5); // remove the uuid from cache as names can be changed
+                return name;
+            }
+            client.close();
+        } catch (IOException | org.apache.hc.core5.http.ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static UUID getUUIDFromName(String name) {
+        //get offline player is deprecated so we'll just see if they're online to get their uuid
+        Player player = Bukkit.getPlayer(name);
+        if (player != null) return player.getUniqueId();
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet get = new HttpGet("https://api.ashcon.app/mojang/v2/user/" + name);
+        try {
+            CloseableHttpResponse response = client.execute(get);
+            String json = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+            JSONObject obj = new JSONObject(json);
+            response.close();
+            if (response.getCode()  == 200) {
+                return UUID.fromString(obj.getString("uuid"));
+            }
+            client.close();
+        } catch (IOException | org.apache.hc.core5.http.ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

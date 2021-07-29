@@ -56,7 +56,7 @@ public class Command_doom extends FreedomCommand
             plugin.ptero.updateAccountStatus(admin);
             if (plugin.dc.enabled && ConfigEntry.DISCORD_ROLE_SYNC.getBoolean())
             {
-                Discord.syncRoles(admin, plugin.pl.getData(admin.getName()).getDiscordID());
+                Discord.syncRoles(admin, plugin.pl.getData(admin.getUniqueId()).getDiscordID());
             }
         }
 

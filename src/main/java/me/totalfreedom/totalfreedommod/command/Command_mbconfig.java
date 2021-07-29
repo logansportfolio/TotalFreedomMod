@@ -45,7 +45,7 @@ public class Command_mbconfig extends FreedomCommand
                     return true;
                 }
 
-                PlayerData data = plugin.pl.getData(sender.getName());
+                PlayerData data = plugin.pl.getData(FUtil.getUUIDFromName(sender.getName()));
                 if (!data.isMasterBuilder())
                 {
                     msg("You are not a master builder!", ChatColor.RED);
@@ -74,7 +74,7 @@ public class Command_mbconfig extends FreedomCommand
                     return true;
                 }
 
-                PlayerData data = plugin.pl.getData(sender.getName());
+                PlayerData data = plugin.pl.getData(FUtil.getUUIDFromName(sender.getName()));
                 final String targetIp = FUtil.getIp(playerSender);
 
                 if (!data.isMasterBuilder())
@@ -101,14 +101,14 @@ public class Command_mbconfig extends FreedomCommand
                     return false;
                 }
 
-                if (plugin.pl.canManageMasterBuilders(sender.getName()))
+                if (plugin.pl.canManageMasterBuilders(FUtil.getUUIDFromName(sender.getName())))
                 {
                     return noPerms();
                 }
 
                 final Player player = getPlayer(args[1]);
 
-                PlayerData data = player != null ? plugin.pl.getData(player) : plugin.pl.getData(args[1]);
+                PlayerData data = player != null ? plugin.pl.getData(player) : plugin.pl.getData(FUtil.getUUIDFromName(args[1]));
 
                 if (data == null)
                 {
@@ -157,13 +157,13 @@ public class Command_mbconfig extends FreedomCommand
                     return false;
                 }
 
-                if (plugin.pl.canManageMasterBuilders(sender.getName()))
+                if (plugin.pl.canManageMasterBuilders(FUtil.getUUIDFromName(sender.getName())))
                 {
                     return noPerms();
                 }
 
                 Player player = getPlayer(args[1]);
-                PlayerData data = player != null ? plugin.pl.getData(player) : plugin.pl.getData(args[1]);
+                PlayerData data = player != null ? plugin.pl.getData(player) : plugin.pl.getData(FUtil.getUUIDFromName(args[1]));
 
                 if (data == null || !data.isMasterBuilder())
                 {
@@ -210,7 +210,7 @@ public class Command_mbconfig extends FreedomCommand
             }
             else if (args[0].equalsIgnoreCase("clearip"))
             {
-                PlayerData data = plugin.pl.getData(sender.getName());
+                PlayerData data = plugin.pl.getData(FUtil.getUUIDFromName(sender.getName()));
                 if (data.isMasterBuilder())
                 {
                     return data.getIps();

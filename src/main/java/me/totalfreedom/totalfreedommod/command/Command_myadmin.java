@@ -170,7 +170,7 @@ public class Command_myadmin extends FreedomCommand
                         msg("Role syncing is not enabled.", ChatColor.RED);
                         return true;
                     }
-                    PlayerData playerData = plugin.pl.getData(target.getName());
+                    PlayerData playerData = plugin.pl.getData(target.getUniqueId());
                     if (playerData.getDiscordID() == null)
                     {
                         msg("Please run /linkdiscord first!", ChatColor.RED);
@@ -248,7 +248,7 @@ public class Command_myadmin extends FreedomCommand
         {
             if (args[0].equals("-o") && args[2].equals("clearip"))
             {
-                Admin admin = plugin.al.getEntryByName(args[1]);
+                Admin admin = plugin.al.getEntryByUUID(FUtil.getUUIDFromName(args[1]));
                 if (admin != null)
                 {
                     return admin.getIps();
