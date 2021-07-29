@@ -22,46 +22,47 @@ public class DiscordToMinecraftListener extends ListenerAdapter
     public void onMessageReceived(MessageReceivedEvent event)
     {
         String chat_channel_id = ConfigEntry.DISCORD_CHAT_CHANNEL_ID.getString();
-        if (event.getMember() != null && !chat_channel_id.isEmpty() && event.getChannel().getId().equals(chat_channel_id))
+        if (event.getMember() != null && !chat_channel_id.isEmpty()
+                && event.getChannel().getId().equals(chat_channel_id)
+                && !event.getAuthor().getId().equals(Discord.bot.getSelfUser().getId()))
         {
-            if (!event.getAuthor().getId().equals(Discord.bot.getSelfUser().getId()))
+            Member member = event.getMember();
+            String tag = getDisplay(member);
+            StringBuilder message = new StringBuilder(ChatColor.DARK_GRAY + "[" + ChatColor.DARK_AQUA + "Discord"
+                    + ChatColor.DARK_GRAY + "]");
+            Message msg = event.getMessage();
+            if (tag != null)
             {
-                Member member = event.getMember();
-                String tag = getDisplay(member);
-                StringBuilder message = new StringBuilder(ChatColor.DARK_GRAY + "[" + ChatColor.DARK_AQUA + "Discord" + ChatColor.DARK_GRAY + "]");
-                Message msg = event.getMessage();
-                if (tag != null)
-                {
-                    message.append(" ").append(tag);
-                }
-                message.append(" ").append(ChatColor.RED).append(ChatColor.stripColor(member.getEffectiveName())).append(ChatColor.DARK_GRAY).append(":").append(ChatColor.RESET);
-                ComponentBuilder builder = new ComponentBuilder(message.toString());
-                if (!msg.getContentDisplay().isEmpty())
-                {
-                    builder.append(" ").append(ChatColor.stripColor(msg.getContentDisplay()));
-                    message.append(" ").append(ChatColor.stripColor(msg.getContentDisplay())); // for logging
-                }
-                if (!msg.getAttachments().isEmpty())
-                {
-                    for (Message.Attachment attachment : msg.getAttachments())
-                    {
-                        attachment.getUrl();
-                        builder.append(" ");
-                        TextComponent text = new TextComponent(ChatColor.YELLOW + "[Media]");
-                        text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, attachment.getUrl()));
-                        builder.append(text);
-                        message.append(" [Media]"); // for logging
-                    }
-                }
-                for (Player player : Bukkit.getOnlinePlayers())
-                {
-                    if (TotalFreedomMod.getPlugin().pl.getData(player).doesDisplayDiscord())
-                    {
-                        player.spigot().sendMessage(builder.create());
-                    }
-                }
-                FLog.info(message.toString());
+                message.append(" ").append(tag);
             }
+            message.append(" ").append(ChatColor.RED).append(ChatColor.stripColor(member.getEffectiveName()))
+                    .append(ChatColor.DARK_GRAY).append(":").append(ChatColor.RESET);
+            ComponentBuilder builder = new ComponentBuilder(message.toString());
+            if (!msg.getContentDisplay().isEmpty())
+            {
+                builder.append(" ").append(ChatColor.stripColor(msg.getContentDisplay()));
+                message.append(" ").append(ChatColor.stripColor(msg.getContentDisplay())); // for logging
+            }
+            if (!msg.getAttachments().isEmpty())
+            {
+                for (Message.Attachment attachment : msg.getAttachments())
+                {
+                    attachment.getUrl();
+                    builder.append(" ");
+                    TextComponent text = new TextComponent(ChatColor.YELLOW + "[Media]");
+                    text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, attachment.getUrl()));
+                    builder.append(text);
+                    message.append(" [Media]"); // for logging
+                }
+            }
+            for (Player player : Bukkit.getOnlinePlayers())
+            {
+                if (TotalFreedomMod.getPlugin().pl.getData(player).doesDisplayDiscord())
+                {
+                    player.spigot().sendMessage(builder.create());
+                }
+            }
+            FLog.info(message.toString());
         }
     }
 
