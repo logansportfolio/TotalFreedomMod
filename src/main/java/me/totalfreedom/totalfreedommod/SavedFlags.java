@@ -46,7 +46,7 @@ public class SavedFlags extends FreedomService
         return flags;
     }
 
-    public boolean getSavedFlag(String flag) throws Exception
+    public boolean getSavedFlag(String flag) throws IllegalStateException
     {
         Boolean flagValue = null;
 
@@ -66,7 +66,7 @@ public class SavedFlags extends FreedomService
         }
         else
         {
-            throw new Exception();
+            throw new IllegalStateException("Attempt to get non-existent flag " + flag);
         }
     }
 
