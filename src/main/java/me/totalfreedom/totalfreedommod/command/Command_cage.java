@@ -67,6 +67,11 @@ public class Command_cage extends FreedomCommand
                     outerMaterial = Material.PLAYER_HEAD;
                     if (args.length >= 3)
                     {
+                        if (!args[2].matches("([A-z]*)") || args[2].length() < 3 || args[2].length() > 16)
+                        {
+                            msg("Invalid name!", ChatColor.RED);
+                            return true;
+                        }
                         skullName = args[2];
                     }
                     else
