@@ -20,12 +20,14 @@ public class WorldManager extends FreedomService
     public Flatlands flatlands;
     public AdminWorld adminworld;
     public MasterBuilderWorld masterBuilderWorld;
+    public Floatlands floatlands;
 
     public WorldManager()
     {
         this.flatlands = new Flatlands();
         this.adminworld = new AdminWorld();
         this.masterBuilderWorld = new MasterBuilderWorld();
+        this.floatlands = new Floatlands();
     }
 
     @Override
@@ -34,6 +36,7 @@ public class WorldManager extends FreedomService
         flatlands.getWorld();
         adminworld.getWorld();
         masterBuilderWorld.getWorld();
+        floatlands.getWorld();
 
         // Disable weather
         if (ConfigEntry.DISABLE_WEATHER.getBoolean())

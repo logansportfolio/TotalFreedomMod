@@ -41,6 +41,11 @@ public class CleanroomChunkGenerator extends ChunkGenerator
 
     public CleanroomChunkGenerator(String id)
     {
+        this(id, true);
+    }
+
+    public CleanroomChunkGenerator(String id, boolean generateBedrock)
+    {
         if (id != null)
         {
             try
@@ -48,7 +53,11 @@ public class CleanroomChunkGenerator extends ChunkGenerator
                 int y = 0;
 
                 materials = new Material[128]; // Default to 128, will be resized later if required
-                materials[y++] = Material.BEDROCK;
+
+                if (generateBedrock)
+                {
+                    materials[y++] = Material.BEDROCK;
+                }
 
                 if (id.length() > 0)
                 {
@@ -115,14 +124,24 @@ public class CleanroomChunkGenerator extends ChunkGenerator
                 e.printStackTrace();
 
                 materials = new Material[65];
-                materials[0] = Material.BEDROCK;
+
+                if (generateBedrock)
+                {
+                    materials[0] = Material.BEDROCK;
+                }
+
                 Arrays.fill(materials, 1, 65, Material.STONE);
             }
         }
         else
         {
             materials = new Material[65];
-            materials[0] = Material.BEDROCK;
+
+            if (generateBedrock)
+            {
+                materials[0] = Material.BEDROCK;
+            }
+
             Arrays.fill(materials, 1, 65, Material.STONE);
         }
     }
