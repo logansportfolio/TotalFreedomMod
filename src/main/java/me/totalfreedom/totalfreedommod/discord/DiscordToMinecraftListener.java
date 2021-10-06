@@ -42,8 +42,7 @@ public class DiscordToMinecraftListener extends ListenerAdapter
                 if (repliedTo != null)
                 {
                     message.append(ChatColor.DARK_GRAY + ChatColor.ITALIC +"[" + ChatColor.GRAY + "Replying to " + ChatColor.BOLD + repliedTo.getAuthor().getName() + ChatColor.RESET + ChatColor.DARK_GRAY+  "]" + ChatColor.RESET);
-                }
-                else
+                } else
                 {
                     message.append(ChatColor.RESET + " ")
                 }
