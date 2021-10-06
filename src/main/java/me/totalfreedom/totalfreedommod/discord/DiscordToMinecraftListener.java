@@ -34,7 +34,20 @@ public class DiscordToMinecraftListener extends ListenerAdapter
                 {
                     message.append(" ").append(tag);
                 }
-                message.append(" ").append(ChatColor.RED).append(ChatColor.stripColor(member.getEffectiveName())).append(ChatColor.DARK_GRAY).append(":").append(ChatColor.RESET);
+                
+                message.append(" ").append(ChatColor.RED).append(ChatColor.stripColor(member.getEffectiveName())).append(ChatColor.DARK_GRAY).append(":");
+                
+                Message repliedTo = msg.getReferencedMessage()
+                
+                if (repliedTo != null)
+                {
+                    message.append(ChatColor.DARK_GRAY + ChatColor.ITALIC +"[" + ChatColor.GRAY + "Replying to " + ChatColor.BOLD + repliedTo.getAuthor().getName() + ChatColor.RESET + ChatColor.DARK_GRAY+  "]" + ChatColor.RESET);
+                }
+                else
+                {
+                message.append(ChatColor.RESET + " ")
+                }
+                
                 ComponentBuilder builder = new ComponentBuilder(message.toString());
                 if (!msg.getContentDisplay().isEmpty())
                 {
