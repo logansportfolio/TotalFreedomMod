@@ -45,7 +45,7 @@ public class DiscordToMinecraftListener extends ListenerAdapter
                 }
                 else
                 {
-                message.append(ChatColor.RESET + " ")
+                    message.append(ChatColor.RESET + " ")
                 }
                 
                 ComponentBuilder builder = new ComponentBuilder(message.toString());
