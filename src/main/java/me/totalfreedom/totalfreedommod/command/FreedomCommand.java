@@ -182,8 +182,7 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
             noPerms();
         }
     }
-
-    protected void checkRank(String permission)
+    protected void checkPermissions(String permission)
     {
         //TODO: Not bothering with BukkitTelnet now.
         if (sender instanceof Player player)
@@ -193,6 +192,23 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
                 noPerms();
             }
         }
+    }
+
+    protected boolean checkPermissionsSilent(String permission)
+    {
+        //TODO: Not bothering with BukkitTelnet now.
+        if (sender instanceof ConsoleCommandSender)
+        {
+            return true;
+        }
+        if (sender instanceof Player player)
+        {
+            if (!plugin.permissionHandler.hasPermission(player, permission))
+            {
+                return false;
+            }
+        }
+        return false;
     }
 
     @Deprecated
@@ -408,7 +424,13 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
 
         public boolean func2()
         {
-            if (!plugin.rm.getRank(sender).isAtLeast(perms.level()))
+            /*if (!plugin.rm.getRank(sender).isAtLeast(perms.level()))
+            {
+                msg(NO_PERMISSION);
+                return true;
+            }*/
+
+            if (!checkPermissionsSilent(perms.permission()))
             {
                 msg(NO_PERMISSION);
                 return true;

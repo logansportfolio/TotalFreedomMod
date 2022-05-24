@@ -4,12 +4,15 @@ import me.totalfreedom.totalfreedommod.admin.Admin;
 import me.totalfreedom.totalfreedommod.admin.AdminList;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 import me.totalfreedom.totalfreedommod.httpd.NanoHTTPD;
+import me.totalfreedom.totalfreedommod.permissions.handler.DefaultPermissionHandler;
+import me.totalfreedom.totalfreedommod.permissions.handler.IPermissionHandler;
 import me.totalfreedom.totalfreedommod.util.FUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public class Module_list extends HTTPDModule
@@ -26,6 +29,29 @@ public class Module_list extends HTTPDModule
         if (params.get("json") != null && params.get("json").equals("true"))
         {
             final JSONObject responseObject = new JSONObject();
+            if (!(plugin.permissionHandler instanceof DefaultPermissionHandler))
+            {
+                IPermissionHandler handler = plugin.permissionHandler;
+                final JSONObject players = new JSONObject();
+
+                Arrays.stream(handler.getGroups()).forEach(s ->
+                {
+                    JSONArray array = new JSONArray();
+                    Bukkit.getOnlinePlayers().stream().filter(player -> !plugin.al.isVanished(player.getName())).filter(player -> handler.getPrimaryGroup(player).equalsIgnoreCase(s)).forEach(player ->
+                    {
+                        array.put(player.getName());
+                    });
+                    players.put(s.toLowerCase(), array);
+                });
+
+                responseObject.put("players", players);
+                responseObject.put("online", Bukkit.getOnlinePlayers().stream().filter(player -> !plugin.al.isVanished(player.getName())).count());
+                responseObject.put("max", Bukkit.getMaxPlayers());
+
+                final NanoHTTPD.Response response = new NanoHTTPD.Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_JSON, responseObject.toString(4));
+                response.addHeader("Access-Control-Allow-Origin", "*");
+                return response;
+            }
 
             final JSONArray owners = new JSONArray();
             final JSONArray executives = new JSONArray();
@@ -44,27 +70,27 @@ public class Module_list extends HTTPDModule
 
                 if (plugin.pl.getData(player).isMasterBuilder())
                 {
-                    masterbuilders.add(player.getName());
+                    masterbuilders.put(player.getName());
                 }
 
                 if (FUtil.DEVELOPER_NAMES.contains(player.getName()))
                 {
-                    developers.add(player.getName());
+                    developers.put(player.getName());
                 }
 
                 if (ConfigEntry.SERVER_EXECUTIVES.getList().contains(player.getName()) && !FUtil.DEVELOPERS.contains(player.getName()))
                 {
-                    executives.add(player.getName());
+                    executives.put(player.getName());
                 }
 
                 if (ConfigEntry.SERVER_OWNERS.getList().contains(player.getName()))
                 {
-                    owners.add(player.getName());
+                    owners.put(player.getName());
                 }
 
                 if (!plugin.al.isAdmin(player) && hasSpecialTitle(player))
                 {
-                    operators.add(player.getName());
+                    operators.put(player.getName());
                 }
 
                 if (hasSpecialTitle(player) && plugin.al.isAdmin(player) && !plugin.al.isVanished(player.getName()))
@@ -74,12 +100,12 @@ public class Module_list extends HTTPDModule
                     {
                         case ADMIN:
                         {
-                            admins.add(player.getName());
+                            admins.put(player.getName());
                             break;
                         }
                         case SENIOR_ADMIN:
                         {
-                            senioradmins.add(player.getName());
+                            senioradmins.put(player.getName());
                             break;
                         }
                         default:
@@ -102,11 +128,11 @@ public class Module_list extends HTTPDModule
             responseObject.put("online", FUtil.getFakePlayerCount());
             responseObject.put("max", server.getMaxPlayers());
 
-            final NanoHTTPD.Response response = new NanoHTTPD.Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_JSON, responseObject.toString());
+
+            final NanoHTTPD.Response response = new NanoHTTPD.Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_JSON, responseObject.toString(4));
             response.addHeader("Access-Control-Allow-Origin", "*");
             return response;
-        }
-        else
+        } else
         {
             final StringBuilder body = new StringBuilder();
 

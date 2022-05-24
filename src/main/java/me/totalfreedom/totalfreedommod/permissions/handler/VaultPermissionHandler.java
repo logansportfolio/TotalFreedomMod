@@ -96,6 +96,23 @@ public class VaultPermissionHandler implements IPermissionHandler
         return this.permissions.playerInGroup(player, groupName);
     }
 
+    @Override
+    public String[] getGroups()
+    {
+        if (this.permissions == null)
+        {
+            FLog.debug("Can't use Vault permissions system for group listing, there is no plugin using Vault permissions.");
+            return new String[0];
+        }
+        return this.permissions.getGroups();
+    }
+
+    @Override
+    public String getPrimaryGroup(@NotNull Player player)
+    {
+        return this.permissions.getPrimaryGroup(player);
+    }
+
     public Permission getPermissions()
     {
         return permissions;

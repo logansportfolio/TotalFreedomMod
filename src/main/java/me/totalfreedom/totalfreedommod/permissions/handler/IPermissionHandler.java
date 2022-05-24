@@ -17,4 +17,9 @@ public interface IPermissionHandler
 
     boolean inGroup(@NotNull OfflinePlayer player, @Nullable String groupName);
     boolean inGroup(@NotNull Player player, @Nullable String groupName);
+
+    String getPrimaryGroup(@NotNull Player player);
+
+
+    String[] getGroups();
 }

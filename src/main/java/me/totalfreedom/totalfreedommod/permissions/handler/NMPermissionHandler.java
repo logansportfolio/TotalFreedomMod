@@ -5,6 +5,7 @@ import me.totalfreedom.totalfreedommod.util.FLog;
 import net.milkbowl.vault.permission.Permission;
 import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin;
 import nl.chimpgamer.networkmanager.api.NetworkManagerProvider;
+import nl.chimpgamer.networkmanager.api.models.permissions.Group;
 import nl.chimpgamer.networkmanager.api.models.permissions.PermissionPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -91,5 +92,23 @@ public class NMPermissionHandler implements IPermissionHandler
     public boolean inGroup(@NotNull Player player, @Nullable String groupName)
     {
         return this.inGroup((OfflinePlayer) player, groupName);
+    }
+
+    @Override
+    public String[] getGroups()
+    {
+        return this.plugin.getPermissionManager().getGroups().values().stream().map(Group::getName).toArray(String[]::new);
+    }
+
+    @Override
+    public String getPrimaryGroup(@NotNull Player player)
+    {
+        PermissionPlayer permissionPlayer = this.plugin.getPermissionManager().getPermissionPlayer(player.getUniqueId());
+        if (permissionPlayer == null)
+        {
+            FLog.warning("NM Perms: Couldn't find player's primary group due to them not be found our list");
+            return "default";
+        }
+        return this.plugin.getPermissionManager().getPermissionPlayer(player.getUniqueId()).getPrimaryGroup().getName();
     }
 }

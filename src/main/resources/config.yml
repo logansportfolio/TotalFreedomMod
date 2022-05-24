@@ -59,6 +59,7 @@ permissions:
   groups:
     admin: "Administrator"
     senior_admin: "Senior-Administrator"
+    default: "Guest"
 
 # Discord
 discord:
