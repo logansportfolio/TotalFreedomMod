@@ -73,6 +73,9 @@ public enum ConfigEntry
     SERVER_WHITELIST_MOTD(String.class, "server.motds.whitelist"),
     SERVER_FULL_MOTD(String.class, "server.motds.full"),
     //
+
+    PERMISSIONS_GROUPS_ADMIN(String.class, "permissions.groups.admin"),
+    PERMISSIONS_GROUPS_SENIOR(String.class, "permissions.groups.senior_admin"),
     DISCORD_TOKEN(String.class, "discord.token"),
     DISCORD_REPORT_CHANNEL_ID(String.class, "discord.report_channel_id"),
     DISCORD_CHAT_CHANNEL_ID(String.class, "discord.chat_channel_id"),

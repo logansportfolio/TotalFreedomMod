@@ -2,17 +2,22 @@ package me.totalfreedom.totalfreedommod.admin;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
 import me.totalfreedom.totalfreedommod.FreedomService;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
+import me.totalfreedom.totalfreedommod.permissions.handler.NMPermissionHandler;
+import me.totalfreedom.totalfreedommod.permissions.handler.VaultPermissionHandler;
 import me.totalfreedom.totalfreedommod.rank.Rank;
 import me.totalfreedom.totalfreedommod.util.FLog;
 import me.totalfreedom.totalfreedommod.util.FUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class AdminList extends FreedomService
@@ -55,8 +60,7 @@ public class AdminList extends FreedomService
                     allAdmins.add(admin);
                 }
             }
-        }
-        catch (SQLException e)
+        } catch (SQLException e)
         {
             FLog.severe("Failed to load admin list: " + e.getMessage());
         }
@@ -110,7 +114,7 @@ public class AdminList extends FreedomService
             return true;
         }
 
-        Admin admin = getAdmin((Player)sender);
+        Admin admin = getAdmin((Player) sender);
 
         return admin != null && admin.isActive();
     }
@@ -121,28 +125,48 @@ public class AdminList extends FreedomService
         {
             return true;
         }
+        if (plugin.permissionHandler instanceof NMPermissionHandler || plugin.permissionHandler instanceof VaultPermissionHandler)
+        {
+            FLog.debug("Using " + plugin.permissionHandler.getClass().getSimpleName() + " for AdminList#isAdmin");
+            return plugin.permissionHandler.inGroup(player, ConfigEntry.PERMISSIONS_GROUPS_SENIOR.getString());
+        }
+        FLog.debug("AdminList#isAdmin: Returning false because there is no permissions plugin that supports groups on the server");
+        return false;
 
-        Admin admin = getAdmin(player);
+        /*Admin admin = getAdmin(player);
 
-        return admin != null && admin.isActive();
+        return admin != null && admin.isActive();*/
     }
 
     public boolean isSeniorAdmin(CommandSender sender)
     {
-        Admin admin = getAdmin(sender);
+        //TODO: BukkitTelnet checks, but fuck that plugin
+        if (sender instanceof ConsoleCommandSender)
+        {
+            return true;
+        }
+        if (sender instanceof Player player && (plugin.permissionHandler instanceof NMPermissionHandler || plugin.permissionHandler instanceof VaultPermissionHandler))
+        {
+            FLog.debug("Using " + plugin.permissionHandler.getClass().getSimpleName() + " for AdminList#isSeniorAdmin");
+            return plugin.permissionHandler.inGroup(player, ConfigEntry.PERMISSIONS_GROUPS_SENIOR.getString());
+        }
+        FLog.debug("AdminList#isSeniorAdmin: Returning false because there is no permissions plugin that supports groups on the server");
+        return false;
+//        return plugin.permissionHandler.hasPermission(sender, "totalfreedommod.admin");
+        /*Admin admin = getAdmin(sender);
         if (admin == null)
         {
             return false;
         }
 
-        return admin.getRank().ordinal() >= Rank.SENIOR_ADMIN.ordinal();
+        return admin.getRank().ordinal() >= Rank.SENIOR_ADMIN.ordinal();*/
     }
 
     public Admin getAdmin(CommandSender sender)
     {
         if (sender instanceof Player)
         {
-            return getAdmin((Player)sender);
+            return getAdmin((Player) sender);
         }
 
         return getEntryByName(sender.getName());
@@ -271,13 +295,13 @@ public class AdminList extends FreedomService
             ResultSet currentSave = plugin.sql.getAdminByUuid(admin.getUuid());
             for (Map.Entry<String, Object> entry : admin.toSQLStorable().entrySet())
             {
-                Object storedValue = plugin.sql.getValue(currentSave, entry.getKey(), entry.getValue());                if (storedValue != null && !storedValue.equals(entry.getValue()) || storedValue == null && entry.getValue() != null || entry.getValue() == null)
+                Object storedValue = plugin.sql.getValue(currentSave, entry.getKey(), entry.getValue());
+                if (storedValue != null && !storedValue.equals(entry.getValue()) || storedValue == null && entry.getValue() != null || entry.getValue() == null)
                 {
                     plugin.sql.setAdminValue(admin, entry.getKey(), entry.getValue());
                 }
             }
-        }
-        catch (SQLException e)
+        } catch (SQLException e)
         {
             FLog.severe("Failed to save admin: " + e.getMessage());
         }

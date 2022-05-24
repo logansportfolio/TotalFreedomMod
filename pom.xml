@@ -39,7 +39,17 @@
     </scm>
 
     <repositories>
-        
+
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+
+        <repository>
+            <id>networkmanager-repo</id>
+            <url>https://repo.networkmanager.xyz/repository/maven-public/</url>
+        </repository>
+
         <repository>
             <id>atlas-nexus-01-totalfreedom-development</id>
             <url>https://nexus-01.core.atlas-media.co.uk/repository/totalfreedom-development/</url>
@@ -100,8 +110,8 @@
             <id>esentialsx-repo</id>
             <url>https://repo.essentialsx.net/releases/</url>
         </repository>
-        
-        
+
+
     </repositories>
 
     <dependencies>
@@ -189,7 +199,7 @@
             <version>v1.9</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
@@ -231,18 +241,43 @@
             <version>3.1.2</version>
             <scope>compile</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.8.0</version>
             <scope>compile</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.eclipse.sisu</groupId>
             <artifactId>org.eclipse.sisu.inject</artifactId>
             <version>0.3.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bstats</groupId>
+                    <artifactId>bstats</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>nl.chimpgamer.networkmanager</groupId>
+            <artifactId>api</artifactId>
+            <version>2.11.4</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.github.slimjar</groupId>
+                    <artifactId>slimjar</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

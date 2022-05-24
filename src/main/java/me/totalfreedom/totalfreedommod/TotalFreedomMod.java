@@ -3,6 +3,7 @@ package me.totalfreedom.totalfreedommod;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
+
 import me.totalfreedom.totalfreedommod.admin.ActivityLog;
 import me.totalfreedom.totalfreedommod.admin.AdminList;
 import me.totalfreedom.totalfreedommod.banning.BanManager;
@@ -35,6 +36,10 @@ import me.totalfreedom.totalfreedommod.fun.Trailer;
 import me.totalfreedom.totalfreedommod.httpd.HTTPDaemon;
 import me.totalfreedom.totalfreedommod.permissions.PermissionConfig;
 import me.totalfreedom.totalfreedommod.permissions.PermissionManager;
+import me.totalfreedom.totalfreedommod.permissions.handler.DefaultPermissionHandler;
+import me.totalfreedom.totalfreedommod.permissions.handler.IPermissionHandler;
+import me.totalfreedom.totalfreedommod.permissions.handler.NMPermissionHandler;
+import me.totalfreedom.totalfreedommod.permissions.handler.VaultPermissionHandler;
 import me.totalfreedom.totalfreedommod.player.PlayerList;
 import me.totalfreedom.totalfreedommod.punishments.PunishmentList;
 import me.totalfreedom.totalfreedommod.rank.RankManager;
@@ -132,6 +137,8 @@ public class TotalFreedomMod extends JavaPlugin
     public WorldEditBridge web;
     public WorldGuardBridge wgb;
 
+    public IPermissionHandler permissionHandler;
+
     public static TotalFreedomMod getPlugin()
     {
         return plugin;
@@ -143,7 +150,7 @@ public class TotalFreedomMod extends JavaPlugin
         {
             if (plugin.getName().equalsIgnoreCase(pluginName))
             {
-                return (TotalFreedomMod)plugin;
+                return (TotalFreedomMod) plugin;
             }
         }
         return null;
@@ -208,6 +215,20 @@ public class TotalFreedomMod extends JavaPlugin
 
         // Metrics @ https://bstats.org/plugin/bukkit/TotalFreedomMod/2966
         new Metrics(this, 2966);
+
+        if (getServer().getPluginManager().isPluginEnabled("NetworkManager"))
+        {
+            FLog.info("Using NetworkManager's permission handling");
+            this.permissionHandler = new NMPermissionHandler(this);
+        } else if (getServer().getPluginManager().isPluginEnabled("Vault"))
+        {
+            FLog.info("Using Vault's permission handling");
+            this.permissionHandler = new VaultPermissionHandler(this);
+        } else
+        {
+            FLog.info("Using Bukkit's native permission handling");
+            this.permissionHandler = new DefaultPermissionHandler();
+        }
     }
 
     @Override
@@ -255,8 +276,7 @@ public class TotalFreedomMod extends JavaPlugin
                 date = props.getProperty("buildDate", "unknown");
                 // Need to do this or it will display ${git.commit.id.abbrev}
                 head = props.getProperty("buildHead", "unknown").replace("${git.commit.id.abbrev}", "unknown");
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 FLog.severe("Could not load build properties! Did you compile with NetBeans/Maven?");
                 FLog.severe(ex);

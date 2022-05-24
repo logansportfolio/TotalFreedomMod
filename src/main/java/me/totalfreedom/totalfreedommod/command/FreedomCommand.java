@@ -43,6 +43,8 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
     private final String usage;
     private final String aliases;
     private final Rank level;
+
+    private final String permission;
     private final SourceType source;
     private final boolean blockHostConsole;
     private final int cooldown;
@@ -59,6 +61,7 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
         this.usage = params.usage();
         this.aliases = params.aliases();
         this.level = perms.level();
+        this.permission = perms.permission().isEmpty() ? "totalfreedommod." + this.name.toLowerCase() : perms.permission();
         this.source = perms.source();
         this.blockHostConsole = perms.blockHostConsole();
         this.cooldown = perms.cooldown();
@@ -162,8 +165,48 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
         }
     }
 
+    @Deprecated
+    protected void checkRank(@Deprecated Rank rank, String permission)
+    {
+        //TODO: Not bothering with BukkitTelnet now.
+        if (sender instanceof Player player)
+        {
+            if (!plugin.permissionHandler.hasPermission(player, permission))
+            {
+                noPerms();
+                return;
+            }
+        }
+        if (!plugin.rm.getRank(sender).isAtLeast(rank))
+        {
+            noPerms();
+        }
+    }
+
+    protected void checkRank(String permission)
+    {
+        //TODO: Not bothering with BukkitTelnet now.
+        if (sender instanceof Player player)
+        {
+            if (!plugin.permissionHandler.hasPermission(player, permission))
+            {
+                noPerms();
+            }
+        }
+    }
+
+    @Deprecated
     protected void checkRank(Rank rank)
     {
+        //TODO: Not bothering with BukkitTelnet now.
+        if (sender instanceof Player player)
+        {
+            if (!plugin.permissionHandler.hasPermission(player, this.permission))
+            {
+                noPerms();
+                return;
+            }
+        }
         if (!plugin.rm.getRank(sender).isAtLeast(rank))
         {
             noPerms();

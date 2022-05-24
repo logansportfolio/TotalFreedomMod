@@ -54,6 +54,12 @@ server:
   # What to display at the bottom of the tab list
   tablist_footer: ''
 
+# Permissions System
+permissions:
+  groups:
+    admin: "Administrator"
+    senior_admin: "Senior-Administrator"
+
 # Discord
 discord:
   # If you do not have a token, make a bot account and get one at https://discordapp.com/developers/applications/me

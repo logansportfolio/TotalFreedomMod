@@ -10,9 +10,12 @@ public @interface CommandPermissions
 
     Rank level() default Rank.NON_OP;
 
+    String permission() default "";
+
     SourceType source() default SourceType.BOTH;
 
     boolean blockHostConsole() default false;
 
     int cooldown() default 0;
+
 }
