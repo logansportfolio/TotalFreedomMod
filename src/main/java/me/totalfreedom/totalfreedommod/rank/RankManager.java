@@ -4,6 +4,7 @@ import java.util.Objects;
 import me.totalfreedom.totalfreedommod.FreedomService;
 import me.totalfreedom.totalfreedommod.admin.Admin;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
+import me.totalfreedom.totalfreedommod.permissions.handler.DefaultPermissionHandler;
 import me.totalfreedom.totalfreedommod.player.FPlayer;
 import me.totalfreedom.totalfreedommod.player.PlayerData;
 import me.totalfreedom.totalfreedommod.util.FUtil;
@@ -168,7 +169,12 @@ public class RankManager extends FreedomService
             fPlayer.setTag(null);
             player.setPlayerListName(null);
         }
-        fPlayer.setTag(getTag(player, display.getColoredTag()));
+        if (!(plugin.permissionHandler instanceof DefaultPermissionHandler))
+        {
+            fPlayer.setTag(getTag(player, plugin.permissionHandler.getPrefix(player)));
+        } else {
+            fPlayer.setTag(getTag(player, display.getColoredTag()));
+        }
         updatePlayerTeam(player);
         plugin.pem.setPermissions(player);
     }

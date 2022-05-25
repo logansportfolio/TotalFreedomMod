@@ -127,10 +127,10 @@ public class AdminList extends FreedomService
         }
         if (plugin.permissionHandler instanceof NMPermissionHandler || plugin.permissionHandler instanceof VaultPermissionHandler)
         {
-            FLog.debug("Using " + plugin.permissionHandler.getClass().getSimpleName() + " for AdminList#isAdmin");
-            return plugin.permissionHandler.inGroup(player, ConfigEntry.PERMISSIONS_GROUPS_SENIOR.getString());
+//            FLog.debug("Using " + plugin.permissionHandler.getClass().getSimpleName() + " for AdminList#isAdmin");
+            return plugin.permissionHandler.inGroup(player, ConfigEntry.PERMISSIONS_GROUPS_ADMIN.getString());
         }
-        FLog.debug("AdminList#isAdmin: Returning false because there is no permissions plugin that supports groups on the server");
+//        FLog.debug("AdminList#isAdmin: Returning false because there is no permissions plugin that supports groups on the server");
         return false;
 
         /*Admin admin = getAdmin(player);
@@ -147,10 +147,10 @@ public class AdminList extends FreedomService
         }
         if (sender instanceof Player player && (plugin.permissionHandler instanceof NMPermissionHandler || plugin.permissionHandler instanceof VaultPermissionHandler))
         {
-            FLog.debug("Using " + plugin.permissionHandler.getClass().getSimpleName() + " for AdminList#isSeniorAdmin");
+//            FLog.debug("Using " + plugin.permissionHandler.getClass().getSimpleName() + " for AdminList#isSeniorAdmin");
             return plugin.permissionHandler.inGroup(player, ConfigEntry.PERMISSIONS_GROUPS_SENIOR.getString());
         }
-        FLog.debug("AdminList#isSeniorAdmin: Returning false because there is no permissions plugin that supports groups on the server");
+//        FLog.debug("AdminList#isSeniorAdmin: Returning false because there is no permissions plugin that supports groups on the server");
         return false;
 //        return plugin.permissionHandler.hasPermission(sender, "totalfreedommod.admin");
         /*Admin admin = getAdmin(sender);

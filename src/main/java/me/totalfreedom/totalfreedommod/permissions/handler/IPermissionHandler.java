@@ -20,6 +20,7 @@ public interface IPermissionHandler
 
     String getPrimaryGroup(@NotNull Player player);
 
+    String getPrefix(@NotNull Player player);
 
     String[] getGroups();
 }

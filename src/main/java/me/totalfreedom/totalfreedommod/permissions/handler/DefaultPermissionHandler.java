@@ -48,6 +48,12 @@ public class DefaultPermissionHandler implements IPermissionHandler
     }
 
     @Override
+    public String getPrefix(@NotNull Player player)
+    {
+        throw new UnsupportedOperationException("Unable to use Bukkit's native permission system for groups!");
+    }
+
+    @Override
     public String[] getGroups()
     {
         throw new UnsupportedOperationException("Unable to use Bukkit's native permission system for groups!");

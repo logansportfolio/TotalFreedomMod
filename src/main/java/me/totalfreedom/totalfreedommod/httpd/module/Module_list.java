@@ -6,6 +6,7 @@ import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 import me.totalfreedom.totalfreedommod.httpd.NanoHTTPD;
 import me.totalfreedom.totalfreedommod.permissions.handler.DefaultPermissionHandler;
 import me.totalfreedom.totalfreedommod.permissions.handler.IPermissionHandler;
+import me.totalfreedom.totalfreedommod.util.FLog;
 import me.totalfreedom.totalfreedommod.util.FUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -28,9 +29,11 @@ public class Module_list extends HTTPDModule
     {
         if (params.get("json") != null && params.get("json").equals("true"))
         {
+            FLog.debug("Swapping to JSON View!");
             final JSONObject responseObject = new JSONObject();
             if (!(plugin.permissionHandler instanceof DefaultPermissionHandler))
             {
+                FLog.debug("Displaying custom list on HTTPD!");
                 IPermissionHandler handler = plugin.permissionHandler;
                 final JSONObject players = new JSONObject();
 

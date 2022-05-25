@@ -2,6 +2,7 @@ package me.totalfreedom.totalfreedommod.permissions.handler;
 
 import me.totalfreedom.totalfreedommod.TotalFreedomMod;
 import me.totalfreedom.totalfreedommod.util.FLog;
+import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public class VaultPermissionHandler implements IPermissionHandler
 {
     private Permission permissions;
+    private Chat chat;
 
     public VaultPermissionHandler(TotalFreedomMod plugin)
     {
@@ -31,14 +33,10 @@ public class VaultPermissionHandler implements IPermissionHandler
             plugin.permissionHandler = new DefaultPermissionHandler();
             return;
         }
-        RegisteredServiceProvider<Permission> rsp = Bukkit.getServicesManager().getRegistration(Permission.class);
-        if (rsp == null)
-        {
-            FLog.warning("Switching back to Bukkit's default permissions from Vault's due to no permission system found.");
-            plugin.permissionHandler = new DefaultPermissionHandler();
-            return;
-        }
-        this.permissions = rsp.getProvider();
+
+        this.permissions = setupPerms(plugin);
+        this.chat = setupChat(plugin);
+
         plugin.permissionHandler = this;
     }
 
@@ -113,8 +111,42 @@ public class VaultPermissionHandler implements IPermissionHandler
         return this.permissions.getPrimaryGroup(player);
     }
 
+    @Override
+    public String getPrefix(@NotNull Player player)
+    {
+        if (this.chat == null)
+        {
+            return "[No Chat Plugin]";
+        }
+        return this.chat.getPlayerPrefix(player);
+    }
+
     public Permission getPermissions()
     {
         return permissions;
+    }
+
+    private Permission setupPerms(TotalFreedomMod plugin)
+    {
+        RegisteredServiceProvider<Permission> rsp = Bukkit.getServicesManager().getRegistration(Permission.class);
+        if (rsp == null)
+        {
+            FLog.warning("Switching back to Bukkit's default permissions from Vault's due to no permission system found.");
+            plugin.permissionHandler = new DefaultPermissionHandler();
+            return null;
+        }
+        return rsp.getProvider();
+    }
+
+    private Chat setupChat(TotalFreedomMod plugin)
+    {
+        RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
+        if (rsp == null)
+        {
+//            FLog.warning("Switching back to Bukkit's default permissions from Vault's due to no permission system found.");
+//            plugin.permissionHandler = new DefaultPermissionHandler();
+            return null;
+        }
+        return rsp.getProvider();
     }
 }

@@ -197,16 +197,15 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
     protected boolean checkPermissionsSilent(String permission)
     {
         //TODO: Not bothering with BukkitTelnet now.
+//        FLog.debug("Using checkPermissionsSilent");
         if (sender instanceof ConsoleCommandSender)
         {
             return true;
         }
         if (sender instanceof Player player)
         {
-            if (!plugin.permissionHandler.hasPermission(player, permission))
-            {
-                return false;
-            }
+//            FLog.debug("Checking player permission for " + player.getUniqueId() + " - " + permission);
+            return plugin.permissionHandler.hasPermission(player, permission);
         }
         return false;
     }
@@ -214,9 +213,11 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
     @Deprecated
     protected void checkRank(Rank rank)
     {
+//        FLog.debug("Using checkRank");
         //TODO: Not bothering with BukkitTelnet now.
         if (sender instanceof Player player)
         {
+//            FLog.debug("Checking player permission for " + player.getUniqueId() + " - " + this.permission);
             if (!plugin.permissionHandler.hasPermission(player, this.permission))
             {
                 noPerms();
@@ -430,7 +431,9 @@ public abstract class FreedomCommand implements CommandExecutor, TabCompleter
                 return true;
             }*/
 
-            if (!checkPermissionsSilent(perms.permission()))
+            FLog.debug("Result of check perms: " + (!checkPermissionsSilent(cmd.permission)));
+
+            if (!checkPermissionsSilent(cmd.permission))
             {
                 msg(NO_PERMISSION);
                 return true;

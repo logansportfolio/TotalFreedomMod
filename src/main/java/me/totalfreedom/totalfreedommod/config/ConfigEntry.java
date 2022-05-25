@@ -76,7 +76,6 @@ public enum ConfigEntry
 
     PERMISSIONS_GROUPS_ADMIN(String.class, "permissions.groups.admin"),
     PERMISSIONS_GROUPS_SENIOR(String.class, "permissions.groups.senior_admin"),
-
     PERMISSIONS_GROUPS_DEFAULT(String.class, "permissions.groups.default"),
     DISCORD_TOKEN(String.class, "discord.token"),
     DISCORD_REPORT_CHANNEL_ID(String.class, "discord.report_channel_id"),
