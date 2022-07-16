@@ -133,7 +133,7 @@
 
         <dependency>
             <groupId>me.totalfreedom.scissors</groupId>
-            <artifactId>scissors-api</artifactId>
+            <artifactId>Scissors-API</artifactId>
             <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
