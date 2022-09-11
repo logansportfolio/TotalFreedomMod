@@ -176,11 +176,10 @@ public class Command_saconfig extends FreedomCommand
                 }
 
                 // Find the old admin entry
-                String name = player.getName();
                 Admin admin = null;
                 for (Admin loopAdmin : plugin.al.getAllAdmins())
                 {
-                    if (loopAdmin.getName().equalsIgnoreCase(name) || loopAdmin.getIps().contains(FUtil.getIp(player)))
+                    if (loopAdmin.getUuid().equals(player.getUniqueId()))
                     {
                         admin = loopAdmin;
                         break;
@@ -189,7 +188,6 @@ public class Command_saconfig extends FreedomCommand
 
                 if (admin == null) // New admin
                 {
-
                     FUtil.adminAction(sender.getName(), "Adding " + player.getName() + " to the admin list", true);
                     admin = new Admin(player);
 
