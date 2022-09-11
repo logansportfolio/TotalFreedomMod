@@ -242,13 +242,14 @@ public class Command_saconfig extends FreedomCommand
                 Player player = getPlayer(args[1]);
 
                 Admin admin = player != null ? plugin.al.getAdmin(player) : plugin.al.getEntryByName(args[1]);
-                String adminName = admin.getName();
 
                 if (admin == null)
                 {
                     msg("Admin not found: " + args[1]);
                     return true;
                 }
+
+                String adminName = admin.getName();
 
                 FUtil.adminAction(sender.getName(), "Removing " + admin.getName() + " from the admin list", true);
                 admin.setActive(false);
