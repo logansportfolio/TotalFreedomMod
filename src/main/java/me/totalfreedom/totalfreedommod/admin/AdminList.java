@@ -48,11 +48,17 @@ public class AdminList extends FreedomService
         try
         {
             ResultSet adminSet = plugin.sql.getAdminList();
+            while (adminSet.next())
             {
-                while (adminSet.next())
+                try
                 {
                     Admin admin = new Admin(adminSet);
                     allAdmins.add(admin);
+                }
+                catch (Throwable ex)
+                {
+                    FLog.warning("An error occurred whilst reading the admin entry at row #" + adminSet.getRow());
+                    FLog.warning(ex);
                 }
             }
         }
@@ -245,7 +251,10 @@ public class AdminList extends FreedomService
 
             activeAdmins.add(admin);
             uuidTable.put(admin.getUuid(), admin);
-            nameTable.put(admin.getName().toLowerCase(), admin);
+            if (admin.getName() != null)
+            {
+                nameTable.put(admin.getName().toLowerCase(), admin);
+            }
 
             for (String ip : admin.getIps())
             {

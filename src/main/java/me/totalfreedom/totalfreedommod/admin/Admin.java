@@ -59,7 +59,7 @@ public class Admin
     {
         final StringBuilder output = new StringBuilder();
 
-        output.append("Admin: ").append(getName()).append("\n")
+        output.append("Admin: ").append(getName() != null ? getName() : getUuid().toString()).append("\n")
                 .append("- IPs: ").append(StringUtils.join(ips, ", ")).append("\n")
                 .append("- Last Login: ").append(FUtil.dateToString(lastLogin)).append("\n")
                 .append("- Rank: ").append(rank.getName()).append("\n")
@@ -172,7 +172,7 @@ public class Admin
                 setPotionSpy(false);
 
                 Server server = Bukkit.getServer();
-                Player player = server.getPlayer(getName());
+                Player player = server.getPlayer(getUuid());
 
                 if (player != null)
                 {
