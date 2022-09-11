@@ -374,12 +374,6 @@ public class Discord extends FreedomService
             CompletableFuture<Message> sentMessage = Objects.requireNonNull(bot.getTextChannelById(chat_channel_id)).sendMessage(sanitizedMessage).submit(true);
             sentMessages.add(sentMessage);
         }
-
-        if (enabled && !chat_channel_id.isEmpty())
-        {
-            CompletableFuture<Message> sentMessage = Objects.requireNonNull(bot.getTextChannelById(chat_channel_id)).sendMessage(deformat(message)).submit(true);
-            sentMessages.add(sentMessage);
-        }
     }
 
     public String formatBotTag()
