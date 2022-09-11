@@ -152,7 +152,7 @@ public class SQLite extends FreedomService
     {
         try
         {
-            Object[] data = {key, player.getName()};
+            Object[] data = {key, player.getUuid()};
             PreparedStatement statement = connection.prepareStatement(MessageFormat.format("UPDATE players SET {0}=? WHERE uuid=''{1}''", data));
             statement = setUnknownType(statement, 1, value);
             statement.executeUpdate();
