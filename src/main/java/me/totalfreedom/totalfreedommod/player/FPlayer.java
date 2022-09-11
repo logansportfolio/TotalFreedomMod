@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class FPlayer
 {
@@ -26,7 +27,7 @@ public class FPlayer
     private final TotalFreedomMod plugin;
 
     private final String name;
-
+    private final UUID uuid;
     private final String ip;
     //
     private final FreezeData freezeData = new FreezeData(this);
@@ -70,12 +71,13 @@ public class FPlayer
 
     public FPlayer(TotalFreedomMod plugin, Player player)
     {
-        this(plugin, player.getName(), FUtil.getIp(player));
+        this(plugin, player.getUniqueId(), player.getName(), FUtil.getIp(player));
     }
 
-    private FPlayer(TotalFreedomMod plugin, String name, String ip)
+    private FPlayer(TotalFreedomMod plugin, UUID uuid, String name, String ip)
     {
         this.plugin = plugin;
+        this.uuid = uuid;
         this.name = name;
         this.ip = ip;
     }
@@ -94,14 +96,7 @@ public class FPlayer
 
         if (player == null)
         {
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers())
-            {
-                if (FUtil.getIp(onlinePlayer).equals(ip))
-                {
-                    player = onlinePlayer;
-                    break;
-                }
-            }
+            player = Bukkit.getPlayer(uuid);
         }
 
         return player;

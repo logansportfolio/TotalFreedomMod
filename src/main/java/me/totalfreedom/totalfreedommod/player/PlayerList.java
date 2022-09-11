@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 public class PlayerList extends FreedomService
 {
 
-    public final Map<String, FPlayer> playerMap = Maps.newHashMap(); // ip,dataMap
+    public final Map<UUID, FPlayer> playerMap = Maps.newHashMap(); // uuid, dataMap
     public final Map<UUID, PlayerData> dataMap = Maps.newHashMap(); // uuid, data
 
     @Override
@@ -107,14 +107,14 @@ public class PlayerList extends FreedomService
     // May not return null
     public FPlayer getPlayer(Player player)
     {
-        FPlayer tPlayer = playerMap.get(FUtil.getIp(player));
+        FPlayer tPlayer = playerMap.get(player.getUniqueId());
         if (tPlayer != null)
         {
             return tPlayer;
         }
 
         tPlayer = new FPlayer(plugin, player);
-        playerMap.put(FUtil.getIp(player), tPlayer);
+        playerMap.put(player.getUniqueId(), tPlayer);
 
         return tPlayer;
     }
@@ -233,7 +233,7 @@ public class PlayerList extends FreedomService
         return player;
     }
 
-    public Map<String, FPlayer> getPlayerMap()
+    public Map<UUID, FPlayer> getPlayerMap()
     {
         return playerMap;
     }
