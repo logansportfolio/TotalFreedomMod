@@ -71,12 +71,7 @@ public class InteractBlocker extends FreedomService
         final Player player = event.getPlayer();
         final Block clickedBlock = event.getClickedBlock();
 
-        if (clickedBlock == null)
-        {
-            return;
-        }
-
-        if (clickedBlock.getType() == Material.RESPAWN_ANCHOR && !ConfigEntry.ALLOW_RESPAWN_ANCHORS.getBoolean())
+        if (clickedBlock != null && clickedBlock.getType() == Material.RESPAWN_ANCHOR && !ConfigEntry.ALLOW_RESPAWN_ANCHORS.getBoolean())
         {
             event.setCancelled(true);
             return;
@@ -102,7 +97,7 @@ public class InteractBlocker extends FreedomService
             {
                 //
             }
-            if (eggType != null)
+            if (eggType != null && clickedBlock != null)
             {
                 clickedBlock.getWorld().spawnEntity(clickedBlock.getLocation().add(event.getBlockFace().getDirection()).add(0.5, 0.5, 0.5), eggType);
             }
