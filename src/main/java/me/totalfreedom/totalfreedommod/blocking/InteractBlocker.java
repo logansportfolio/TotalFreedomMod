@@ -69,24 +69,17 @@ public class InteractBlocker extends FreedomService
     private void handleRightClick(PlayerInteractEvent event)
     {
         final Player player = event.getPlayer();
+        final Block clickedBlock = event.getClickedBlock();
 
-        if (event.getClickedBlock() != null)
+        if (clickedBlock != null && clickedBlock.getType() == Material.RESPAWN_ANCHOR && !ConfigEntry.ALLOW_RESPAWN_ANCHORS.getBoolean())
         {
-            if (event.getClickedBlock().getType().equals(Material.STRUCTURE_BLOCK) || event.getClickedBlock().getType().equals(Material.JIGSAW) || event.getClickedBlock().getType().equals(Material.RESPAWN_ANCHOR))
-            {
-                event.setCancelled(true);
-                event.getPlayer().closeInventory();
-            }
+            event.setCancelled(true);
+            return;
         }
 
         if (Groups.SPAWN_EGGS.contains(event.getMaterial()))
         {
             event.setCancelled(true);
-            Block clickedBlock = event.getClickedBlock();
-            if (clickedBlock == null)
-            {
-                return;
-            }
             EntityType eggType = null;
             try
             {
@@ -104,7 +97,7 @@ public class InteractBlocker extends FreedomService
             {
                 //
             }
-            if (eggType != null)
+            if (eggType != null && clickedBlock != null)
             {
                 clickedBlock.getWorld().spawnEntity(clickedBlock.getLocation().add(event.getBlockFace().getDirection()).add(0.5, 0.5, 0.5), eggType);
             }
