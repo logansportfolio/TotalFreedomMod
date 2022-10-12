@@ -374,12 +374,6 @@ public class Discord extends FreedomService
             CompletableFuture<Message> sentMessage = Objects.requireNonNull(bot.getTextChannelById(chat_channel_id)).sendMessage(sanitizedMessage).submit(true);
             sentMessages.add(sentMessage);
         }
-
-        if (enabled && !chat_channel_id.isEmpty())
-        {
-            CompletableFuture<Message> sentMessage = Objects.requireNonNull(bot.getTextChannelById(chat_channel_id)).sendMessage(deformat(message)).submit(true);
-            sentMessages.add(sentMessage);
-        }
     }
 
     public String formatBotTag()
@@ -450,13 +444,16 @@ public class Discord extends FreedomService
         embedBuilder.setDescription(reason);
         embedBuilder.setFooter("Reported by " + reporter.getName(), "https://minotar.net/helm/" + reporter.getName() + ".png");
         embedBuilder.setTimestamp(Instant.from(ZonedDateTime.now()));
-        com.earth2me.essentials.User user = plugin.esb.getEssentialsUser(reported.getName());
-        String location = "World: " + Objects.requireNonNull(user.getLastLocation().getWorld()).getName() + ", X: " + user.getLastLocation().getBlockX() + ", Y: " + user.getLastLocation().getBlockY() + ", Z: " + user.getLastLocation().getBlockZ();
-        embedBuilder.addField("Location", location, true);
-        embedBuilder.addField("God Mode", WordUtils.capitalizeFully(String.valueOf(user.isGodModeEnabled())), true);
-        if (user.getNickname() != null)
+        if (plugin.esb.isEnabled())
         {
-            embedBuilder.addField("Nickname", user.getNickname(), true);
+            com.earth2me.essentials.User user = plugin.esb.getEssentialsUser(reported.getName());
+            String location = "World: " + Objects.requireNonNull(user.getLastLocation().getWorld()).getName() + ", X: " + user.getLastLocation().getBlockX() + ", Y: " + user.getLastLocation().getBlockY() + ", Z: " + user.getLastLocation().getBlockZ();
+            embedBuilder.addField("Location", location, true);
+            embedBuilder.addField("God Mode", WordUtils.capitalizeFully(String.valueOf(user.isGodModeEnabled())), true);
+            if (user.getNickname() != null)
+            {
+                embedBuilder.addField("Nickname", user.getNickname(), true);
+            }
         }
         MessageEmbed embed = embedBuilder.build();
         Message message = channel.sendMessage(embed).complete();
@@ -487,12 +484,17 @@ public class Discord extends FreedomService
         String location = "World: " + Objects.requireNonNull(reported.getLocation().getWorld()).getName() + ", X: " + reported.getLocation().getBlockX() + ", Y: " + reported.getLocation().getBlockY() + ", Z: " + reported.getLocation().getBlockZ();
         embedBuilder.addField("Location", location, true);
         embedBuilder.addField("Game Mode", WordUtils.capitalizeFully(reported.getGameMode().name()), true);
-        com.earth2me.essentials.User user = plugin.esb.getEssentialsUser(reported.getName());
-        embedBuilder.addField("God Mode", WordUtils.capitalizeFully(String.valueOf(user.isGodModeEnabled())), true);
-        if (user.getNickname() != null)
+
+        if (plugin.esb.isEnabled())
         {
-            embedBuilder.addField("Nickname", user.getNickname(), true);
+            com.earth2me.essentials.User user = plugin.esb.getEssentialsUser(reported.getName());
+            embedBuilder.addField("God Mode", WordUtils.capitalizeFully(String.valueOf(user.isGodModeEnabled())), true);
+            if (user.getNickname() != null)
+            {
+                embedBuilder.addField("Nickname", user.getNickname(), true);
+            }
         }
+
         MessageEmbed embed = embedBuilder.build();
         Message message = channel.sendMessage(embed).complete();
 
