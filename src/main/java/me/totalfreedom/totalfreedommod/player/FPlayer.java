@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class FPlayer
 {
@@ -26,7 +27,7 @@ public class FPlayer
     private final TotalFreedomMod plugin;
 
     private final String name;
-
+    private final UUID uuid;
     private final String ip;
     //
     private final FreezeData freezeData = new FreezeData(this);
@@ -54,9 +55,6 @@ public class FPlayer
     private String lastMessage = "";
     private boolean inAdminchat = false;
     private boolean allCommandsBlocked = false;
-
-
-    private boolean superadminIdVerified = false;
     private String lastCommand = "";
     private boolean cmdspyEnabled = false;
     private String tag = null;
@@ -73,12 +71,13 @@ public class FPlayer
 
     public FPlayer(TotalFreedomMod plugin, Player player)
     {
-        this(plugin, player.getName(), FUtil.getIp(player));
+        this(plugin, player.getUniqueId(), player.getName(), FUtil.getIp(player));
     }
 
-    private FPlayer(TotalFreedomMod plugin, String name, String ip)
+    private FPlayer(TotalFreedomMod plugin, UUID uuid, String name, String ip)
     {
         this.plugin = plugin;
+        this.uuid = uuid;
         this.name = name;
         this.ip = ip;
     }
@@ -97,14 +96,7 @@ public class FPlayer
 
         if (player == null)
         {
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers())
-            {
-                if (FUtil.getIp(onlinePlayer).equals(ip))
-                {
-                    player = onlinePlayer;
-                    break;
-                }
-            }
+            player = Bukkit.getPlayer(uuid);
         }
 
         return player;
@@ -113,6 +105,14 @@ public class FPlayer
     public void setPlayer(Player player)
     {
         this.player = player;
+    }
+
+    // Ensure admins don't have admin functionality when removed (FS-222)
+    public void removeAdminFunctionality()
+    {
+        this.setCommandSpy(false);
+        this.setAdminChat(false);
+        this.setFuckoffRadius(0);
     }
 
     public boolean isOrbiting()
@@ -646,16 +646,6 @@ public class FPlayer
     public void setAllCommandsBlocked(boolean allCommandsBlocked)
     {
         this.allCommandsBlocked = allCommandsBlocked;
-    }
-
-    public boolean isSuperadminIdVerified()
-    {
-        return superadminIdVerified;
-    }
-
-    public void setSuperadminIdVerified(boolean superadminIdVerified)
-    {
-        this.superadminIdVerified = superadminIdVerified;
     }
 
     public boolean isCmdspyEnabled()

@@ -176,26 +176,18 @@ public class Command_saconfig extends FreedomCommand
                 }
 
                 // Find the old admin entry
-                String name = player.getName();
                 Admin admin = null;
                 for (Admin loopAdmin : plugin.al.getAllAdmins())
                 {
-                    if (loopAdmin.getName().equalsIgnoreCase(name) || loopAdmin.getIps().contains(FUtil.getIp(player)))
+                    if (loopAdmin.getUuid().equals(player.getUniqueId()))
                     {
                         admin = loopAdmin;
                         break;
                     }
                 }
 
-                if (plugin.pl.isPlayerImpostor(player))
-                {
-                    msg("This player was labeled as a Player impostor and is not an admin, therefore they cannot be added to the admin list.", ChatColor.RED);
-                    return true;
-                }
-
                 if (admin == null) // New admin
                 {
-
                     FUtil.adminAction(sender.getName(), "Adding " + player.getName() + " to the admin list", true);
                     admin = new Admin(player);
 
@@ -205,22 +197,9 @@ public class Command_saconfig extends FreedomCommand
                 else // Existing admin
                 {
                     FUtil.adminAction(sender.getName(), "Re-adding " + player.getName() + " to the admin list", true);
-
-                    String oldName = admin.getName();
-                    if (!oldName.equals(player.getName()))
-                    {
-                        admin.setName(player.getName());
-                        plugin.sql.updateAdminName(oldName, admin.getName());
-                    }
                     admin.addIp(FUtil.getIp(player));
-
                     admin.setActive(true);
                     admin.setLastLogin(new Date());
-
-                    if (plugin.al.isVerifiedAdmin(player))
-                    {
-                        plugin.al.verifiedNoAdmin.remove(player.getName());
-                    }
 
                     plugin.al.save(admin);
                     plugin.al.updateTables();
@@ -259,6 +238,7 @@ public class Command_saconfig extends FreedomCommand
                 checkRank(Rank.ADMIN);
 
                 Player player = getPlayer(args[1]);
+
                 Admin admin = player != null ? plugin.al.getAdmin(player) : plugin.al.getEntryByName(args[1]);
 
                 if (admin == null)
@@ -267,20 +247,22 @@ public class Command_saconfig extends FreedomCommand
                     return true;
                 }
 
+                String adminName = admin.getName();
+
                 FUtil.adminAction(sender.getName(), "Removing " + admin.getName() + " from the admin list", true);
                 admin.setActive(false);
 
                 plugin.al.save(admin);
                 plugin.al.updateTables();
+
                 if (player != null)
                 {
                     plugin.rm.updateDisplay(player);
-                    plugin.pl.getPlayer(player).setAdminChat(false);
                 }
 
                 if (plugin.dc.enabled && ConfigEntry.DISCORD_ROLE_SYNC.getBoolean())
                 {
-                    Discord.syncRoles(admin, plugin.pl.getData(admin.getName()).getDiscordID());
+                    Discord.syncRoles(admin, plugin.pl.getData(adminName).getDiscordID());
                 }
 
                 plugin.ptero.updateAccountStatus(admin);

@@ -1,16 +1,12 @@
 package me.totalfreedom.totalfreedommod.util;
 
+import com.earth2me.essentials.utils.DateUtil;
 import me.totalfreedom.totalfreedommod.TotalFreedomMod;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -19,10 +15,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.json.simple.JSONArray;
 
 import java.io.*;
-import java.lang.reflect.Field;
+import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
@@ -55,9 +50,32 @@ public class FUtil
             "ba5aafba-9012-418f-9819-a7020d591068",  // TFTWPhoenix
             "d6dd9740-40db-45f5-ab16-4ee16a633009", // Abhi
             "2e06e049-24c8-42e4-8bcf-d35372af31e6", // NotInSync
-            "f97c0d7b-6413-4558-a409-88f09a8f9adb" // videogamesm12
+            "f97c0d7b-6413-4558-a409-88f09a8f9adb", // videogamesm12
+            "78408086-1991-4c33-a571-d8fa325465b2", // Telesphoreo
+            "f5cd54c4-3a24-4213-9a56-c06c49594dff", // Taahh
+            "a52f1f08-a398-400a-bca4-2b74b81feae6", // G6_
+            "ca83b658-c03b-4106-9edc-72f70a80656d" // ayunami2000
     );
-    public static final List<String> DEVELOPER_NAMES = Arrays.asList("Madgeek1450", "Prozza", "WickedGamingUK", "Wild1145", "aggelosQQ", "scripthead", "CoolJWB", "elmon_", "speednt", "SupItsDillon", "Paldiu", "TFTWPhoenix", "abhithedev", "NotInSync", "videogamesm12");
+    public static final List<String> DEVELOPER_NAMES = Arrays.asList(
+            "Madgeek1450",
+            "Prozza",
+            "WickedGamingUK",
+            "Wild1145",
+            "aggelosQQ",
+            "scripthead",
+            "Telesphoreo",
+            "CoolJWB",
+            "elmon_",
+            "speednt",
+            "SupItsDillon",
+            "Paldiu",
+            "TFTWPhoenix",
+            "abhithedev",
+            "NotInSync",
+            "videogamesm12",
+            "Taahh",
+            "G6_",
+            "ayunami2000");
     public static final Map<String, ChatColor> CHAT_COLOR_NAMES = new HashMap<>();
     public static final List<ChatColor> CHAT_COLOR_POOL = Arrays.asList(
             ChatColor.DARK_RED,
@@ -223,33 +241,6 @@ public class FUtil
             names.add(material.name());
         }
         return names;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static UUID nameToUUID(String name)
-    {
-        try
-        {
-            JSONArray json = new JSONArray();
-            json.add(name);
-            List<String> headers = new ArrayList<>();
-            headers.add("Accept:application/json");
-            headers.add("Content-Type:application/json");
-            Response response = sendRequest("https://api.mojang.com/profiles/minecraft", "POST", headers, json.toString());
-            // Don't care how stupid this looks, couldn't find anything to parse a json string to something readable in java with something not horrendously huge, maybe im just retarded
-            Pattern pattern = Pattern.compile("(?<=\"id\":\")[a-f0-9].{31}");
-            Matcher matcher = pattern.matcher(response.getMessage());
-            if (matcher.find())
-            {
-                String rawUUID = matcher.group(0).replaceFirst("([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]+)", "$1-$2-$3-$4-$5");
-                return UUID.fromString(rawUUID);
-            }
-        }
-        catch (Exception e)
-        {
-            FLog.severe("Failed to convert name to UUID:\n" + e.toString());
-        }
-        return null;
     }
 
     public static Response sendRequest(String endpoint, String method, List<String> headers, String body) throws IOException
@@ -537,30 +528,6 @@ public class FUtil
         return ip;
     }
 
-    //getField: Borrowed from WorldEdit
-    @SuppressWarnings("unchecked")
-    public static <T> T getField(Object from, String name)
-    {
-        Class<?> checkClass = from.getClass();
-        do
-        {
-            try
-            {
-                Field field = checkClass.getDeclaredField(name);
-                field.setAccessible(true);
-                return (T) field.get(from);
-
-            }
-            catch (NoSuchFieldException | IllegalAccessException ignored)
-            {
-            }
-        }
-        while (checkClass.getSuperclass() != Object.class
-                && ((checkClass = checkClass.getSuperclass()) != null));
-
-        return null;
-    }
-
     public static ChatColor randomChatColor()
     {
         return CHAT_COLOR_POOL.get(RANDOM.nextInt(CHAT_COLOR_POOL.size()));
@@ -599,6 +566,11 @@ public class FUtil
             string = ChatColor.translateAlternateColorCodes('&', string);
         }
         return string;
+    }
+
+    public static String stripColors(String string)
+    {
+        return string.replaceAll("§", "");
     }
 
     public static Date getUnixDate(long unix)
@@ -844,6 +816,62 @@ public class FUtil
             }
         }
         return getServer().getOnlinePlayers().size() - i;
+    }
+
+    public static double getMeanAverageDouble(double[] doubles)
+    {
+        double total = 0;
+
+        for (double aDouble : doubles)
+        {
+            total += aDouble;
+        }
+
+        return total / doubles.length;
+    }
+
+    public static int getMeanAverageInt(int[] ints)
+    {
+        int total = 0;
+
+        for (int anInt : ints)
+        {
+            total += anInt;
+        }
+
+        return total / ints.length;
+    }
+
+    public static long getMeanAverageLong(long[] longs)
+    {
+        long total = 0;
+
+        for (long aLong : longs)
+        {
+            total += aLong;
+        }
+
+        return total / longs.length;
+    }
+
+    public static String getUptime()
+    {
+        return DateUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime());
+    }
+
+    public static double getMaxMem()
+    {
+        return Runtime.getRuntime().maxMemory() / 1024f / 1024f;
+    }
+
+    public static double getTotalMem()
+    {
+        return Runtime.getRuntime().totalMemory() / 1024f / 1024f;
+    }
+
+    public static double getFreeMem()
+    {
+        return Runtime.getRuntime().freeMemory() / 1024f / 1024f;
     }
 
     public static class PaginationList<T> extends ArrayList<T>

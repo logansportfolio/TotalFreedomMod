@@ -112,6 +112,9 @@ public class Command_coins extends FreedomCommand
                                 + ChatColor.GOLD + coinsToTransfer
                                 + ChatColor.GREEN + " coin" + (coinsToTransfer > 1 ? "s" : "")
                                 + " to " + ChatColor.GOLD + target.getName() + ChatColor.GREEN + ".", ChatColor.GREEN);
+
+                        plugin.pl.save(playerData);
+                        plugin.pl.save(senderData);
                     }
 
                     return true;
