@@ -7,11 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.SplittableRandom;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.security.auth.login.LoginException;
 
 import com.google.common.collect.ImmutableList;
@@ -41,9 +38,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bukkit.GameRule;
@@ -66,7 +61,6 @@ public class Discord extends FreedomService
     public List<CompletableFuture<Message>> sentMessages = new ArrayList<>();
     public Boolean enabled = false;
     private static final ImmutableList<String> DISCORD_SUBDOMAINS = ImmutableList.of("discordapp.com", "discord.com", "discord.gg");
-    private final Pattern DISCORD_MENTION_PATTERN = Pattern.compile("(<@!?([0-9]{16,20})>)");
 
     public static String getCode(PlayerData playerData)
     {
@@ -209,7 +203,7 @@ public class Discord extends FreedomService
         catch (NoClassDefFoundError e)
         {
             FLog.warning("The JDA plugin is not installed, therefore the discord bot cannot start.");
-            FLog.warning("To resolve this error, please download the latest JDA from: https://github.com/TFPatches/Minecraft-JDA/releases");
+            FLog.warning("To resolve this error, please download the latest JDA from: https://github.com/AtlasMediaGroup/Minecraft-JDA/releases");
         }
 
     }
@@ -277,7 +271,7 @@ public class Discord extends FreedomService
 
         if (deathMessage != null)
         {
-            messageChatChannel("**" + PlainTextComponentSerializer.plainText().serialize(deathMessage) + "**", true);
+            messageChatChannel("**" + deformat(PlainTextComponentSerializer.plainText().serialize(deathMessage)) + "**", true);
         }
     }
 
@@ -292,7 +286,7 @@ public class Discord extends FreedomService
     {
         if (!plugin.al.isVanished(event.getPlayer().getName()))
         {
-            messageChatChannel("**" + event.getPlayer().getName() + " joined the server" + "**", true);
+            messageChatChannel("**" + deformat(event.getPlayer().getName()) + " joined the server" + "**", true);
         }
     }
 
@@ -301,7 +295,7 @@ public class Discord extends FreedomService
     {
         if (!plugin.al.isVanished(event.getPlayer().getName()))
         {
-            messageChatChannel("**" + event.getPlayer().getName() + " left the server" + "**", true);
+            messageChatChannel("**" + deformat(event.getPlayer().getName()) + " left the server" + "**", true);
         }
     }
 
@@ -437,7 +431,20 @@ public class Discord extends FreedomService
         }
 
         final Guild server = bot.getGuildById(ConfigEntry.DISCORD_SERVER_ID.getString());
+
+        if (server == null)
+        {
+            FLog.severe("The guild ID specified in the config is invalid.");
+            return false;
+        }
+
         final TextChannel channel = server.getTextChannelById(ConfigEntry.DISCORD_REPORT_CHANNEL_ID.getString());
+
+        if (channel == null)
+        {
+            FLog.severe("The report channel ID specified in the config is invalid.");
+            return false;
+        }
 
         final EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Report for " + reported.getName() + " (offline)");
@@ -456,7 +463,7 @@ public class Discord extends FreedomService
             }
         }
         MessageEmbed embed = embedBuilder.build();
-        Message message = channel.sendMessage(embed).complete();
+        Message message = channel.sendMessageEmbeds(embed).complete();
 
         if (!ConfigEntry.DISCORD_REPORT_ARCHIVE_CHANNEL_ID.getString().isEmpty())
         {
@@ -474,7 +481,20 @@ public class Discord extends FreedomService
         }
 
         final Guild server = bot.getGuildById(ConfigEntry.DISCORD_SERVER_ID.getString());
+
+        if (server == null)
+        {
+            FLog.severe("The guild ID specified in the config is invalid.");
+            return false;
+        }
+
         final TextChannel channel = server.getTextChannelById(ConfigEntry.DISCORD_REPORT_CHANNEL_ID.getString());
+
+        if (channel == null)
+        {
+            FLog.severe("The report channel ID specified in the config is invalid.");
+            return false;
+        }
 
         final EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Report for " + reported.getName());
@@ -496,7 +516,7 @@ public class Discord extends FreedomService
         }
 
         MessageEmbed embed = embedBuilder.build();
-        Message message = channel.sendMessage(embed).complete();
+        Message message = channel.sendMessageEmbeds(embed).complete();
 
         if (!ConfigEntry.DISCORD_REPORT_ARCHIVE_CHANNEL_ID.getString().isEmpty())
         {
