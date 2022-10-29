@@ -122,7 +122,9 @@ public class IndefiniteBanList extends FreedomService
                 return;
             }
 
-            String kickMessage = ChatColor.RED + "Your " + bannedBy + " is indefinitely banned from this server.";
+            String kickMessage = ChatColor.RED + "Your " + bannedBy + " is "
+                + (ban.hasExpiry() ? "" : "indefinitely ")
+                + "banned from this server.";
             String reason = ban.getReason();
             if (!Strings.isNullOrEmpty(reason))
             {
