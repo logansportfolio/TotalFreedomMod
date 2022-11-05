@@ -143,12 +143,9 @@ public class Command_plugincontrol extends FreedomCommand
         {
             return Arrays.asList("enable", "disable", "reload", "list");
         }
-        else if (args.length == 2)
+        else if (args.length == 2 && !args[0].equalsIgnoreCase("list"))
         {
-            if (!args[0].equals("list"))
-            {
-                return getAllPluginNames();
-            }
+            return getAllPluginNames();
         }
 
         return Collections.emptyList();
