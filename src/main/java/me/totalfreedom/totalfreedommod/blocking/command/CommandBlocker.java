@@ -203,12 +203,9 @@ public class CommandBlocker extends FreedomService
         }
 
         // Validate sub command
-        if (entry.getSubCommand() != null)
+        if (entry.getSubCommand() != null && (subCommand == null || !subCommand.startsWith(entry.getSubCommand())))
         {
-            if (subCommand == null || !subCommand.startsWith(entry.getSubCommand()))
-            {
-                return false;
-            }
+            return false;
         }
 
         if (entry.getRank().hasPermission(sender))
