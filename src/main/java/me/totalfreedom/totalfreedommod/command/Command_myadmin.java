@@ -231,25 +231,19 @@ public class Command_myadmin extends FreedomCommand
                 }
             }
         }
-        else if (args.length == 3)
+        else if (args.length == 3 && args[0].equalsIgnoreCase("-o"))
         {
-            if (args[0].equalsIgnoreCase("-o"))
-            {
-                List<String> options = new ArrayList<>();
-                options.addAll(singleArguments);
-                options.addAll(doubleArguments);
-                return options;
-            }
+            List<String> options = new ArrayList<>();
+            options.addAll(singleArguments);
+            options.addAll(doubleArguments);
+            return options;
         }
-        else if (args.length == 4)
+        else if (args.length == 4 && args[0].equalsIgnoreCase("-o") && args[2].equalsIgnoreCase("clearip"))
         {
-            if (args[0].equalsIgnoreCase("-o") && args[2].equalsIgnoreCase("clearip"))
+            Admin admin = plugin.al.getEntryByName(args[1]);
+            if (admin != null)
             {
-                Admin admin = plugin.al.getEntryByName(args[1]);
-                if (admin != null)
-                {
-                    return admin.getIps();
-                }
+                return admin.getIps();
             }
         }
         return FUtil.getPlayerList();
