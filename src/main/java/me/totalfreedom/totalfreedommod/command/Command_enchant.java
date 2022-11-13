@@ -251,21 +251,18 @@ public class Command_enchant extends FreedomCommand
                 return getEnchantments(item);
             }
         }
-        else if (args.length == 3)
+        else if (args.length == 3 && args[0].equals("add"))
         {
-            if (args[0].equals("add"))
+            Enchantment enchantment = Enchantment.getByName(args[1].toUpperCase());
+            if (enchantment != null)
             {
-                Enchantment enchantment = Enchantment.getByName(args[1].toUpperCase());
-                if (enchantment != null)
+                if (!unsafe)
                 {
-                    if (!unsafe)
-                    {
-                        return stringNumberRange(1, enchantment.getMaxLevel());
-                    }
-                    else
-                    {
-                        return Collections.singletonList("[level]");
-                    }
+                    return stringNumberRange(1, enchantment.getMaxLevel());
+                }
+                else
+                {
+                    return Collections.singletonList("[level]");
                 }
             }
         }
