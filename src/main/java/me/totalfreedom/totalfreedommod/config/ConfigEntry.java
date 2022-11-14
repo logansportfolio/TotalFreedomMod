@@ -164,7 +164,6 @@ public enum ConfigEntry
     WILDCARD_BLOCKED_COMMANDS(List.class, "blocked_commands.wildcard"),
     FORBIDDEN_WORDS(List.class, "forbidden_words"),
     HOST_SENDER_NAMES(List.class, "host_sender_names"),
-    FAMOUS_PLAYERS(List.class, "famous_players"),
     ADMIN_ONLY_MODE(Boolean.class, "admin_only_mode"),
     ADMIN_INFO(List.class, "admininfo"),
     VOTING_INFO(List.class, "votinginfo"),
