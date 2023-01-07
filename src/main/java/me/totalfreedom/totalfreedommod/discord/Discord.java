@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bukkit.GameRule;
@@ -47,6 +48,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
@@ -195,15 +197,18 @@ public class Discord extends FreedomService
         catch (LoginException e)
         {
             FLog.warning("An invalid token for Discord integration was provided, the bot will not enable.");
+            enabled = false;
         }
         catch (IllegalArgumentException e)
         {
             FLog.warning("Discord integration failed to start.");
+            enabled = false;
         }
         catch (NoClassDefFoundError e)
         {
             FLog.warning("The JDA plugin is not installed, therefore the discord bot cannot start.");
             FLog.warning("To resolve this error, please download the latest JDA from: https://github.com/AtlasMediaGroup/Minecraft-JDA/releases");
+            enabled = false;
         }
 
     }
@@ -224,32 +229,6 @@ public class Discord extends FreedomService
         }
         sentMessages.clear();
         messageChatChannel("**Message queue cleared**", true);
-    }
-
-    public void sendPteroInfo(PlayerData playerData, String username, String password)
-    {
-        User user = getUser(playerData.getDiscordID());
-        String message = "The following are your Pterodactyl details:\n\nUsername: " + username + "\nPassword: " + password + "\n\nYou can connect to the panel at " + plugin.ptero.URL;
-        PrivateChannel privateChannel = user.openPrivateChannel().complete();
-        privateChannel.sendMessage(message).complete();
-    }
-
-    public User getUser(String id)
-    {
-        Guild guild = bot.getGuildById(ConfigEntry.DISCORD_SERVER_ID.getString());
-        if (guild == null)
-        {
-            FLog.severe("Either the bot is not in the Discord server or it doesn't exist. Check the server ID.");
-            return null;
-        }
-
-        Member member = guild.getMemberById(id);
-        if (member == null)
-        {
-            return null;
-        }
-
-        return member.getUser();
     }
 
     public String generateCode(int size)
@@ -284,7 +263,7 @@ public class Discord extends FreedomService
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        if (!plugin.al.isVanished(event.getPlayer().getName()))
+        if (!plugin.al.isVanished(event.getPlayer().getUniqueId()))
         {
             messageChatChannel("**" + deformat(event.getPlayer().getName()) + " joined the server" + "**", true);
         }
@@ -293,7 +272,7 @@ public class Discord extends FreedomService
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLeave(PlayerQuitEvent event)
     {
-        if (!plugin.al.isVanished(event.getPlayer().getName()))
+        if (!plugin.al.isVanished(event.getPlayer().getUniqueId()))
         {
             messageChatChannel("**" + deformat(event.getPlayer().getName()) + " left the server" + "**", true);
         }
@@ -532,6 +511,19 @@ public class Discord extends FreedomService
         public void start()
         {
             messageChatChannel("**Server has started**", true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onAsyncPlayerChat(AsyncPlayerChatEvent event)
+    {
+        Player player = event.getPlayer();
+        String message = event.getMessage();
+
+        if (!ConfigEntry.ADMIN_ONLY_MODE.getBoolean() && !server.hasWhitelist()
+                && !plugin.pl.getPlayer(player).isMuted() && bot != null)
+        {
+            messageChatChannel(player.getName() + " \u00BB " + ChatColor.stripColor(message));
         }
     }
 }

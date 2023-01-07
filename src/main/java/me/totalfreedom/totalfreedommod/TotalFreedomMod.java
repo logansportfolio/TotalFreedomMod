@@ -72,7 +72,6 @@ public class TotalFreedomMod extends JavaPlugin
     public CommandLoader cl;
     // Services
     public WorldManager wm;
-    public LogViewer lv;
     public AdminList al;
     public ActivityLog acl;
     public RankManager rm;
@@ -119,7 +118,6 @@ public class TotalFreedomMod extends JavaPlugin
     public WorldRestrictions wr;
     public EntityWiper ew;
     public VanishHandler vh;
-    public Pterodactyl ptero;
     //
     // Bridges
     public BukkitTelnetBridge btb;
@@ -284,7 +282,6 @@ public class TotalFreedomMod extends JavaPlugin
         {
             // Start services
             wm = new WorldManager();
-            lv = new LogViewer();
             sql = new SQLite();
             al = new AdminList();
             acl = new ActivityLog();
@@ -312,7 +309,6 @@ public class TotalFreedomMod extends JavaPlugin
             gr = new GameRuleHandler();
             ew = new EntityWiper();
             vh = new VanishHandler();
-            ptero = new Pterodactyl();
         }
 
         private void initAdminUtils()

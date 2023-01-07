@@ -90,12 +90,6 @@ public enum ConfigEntry
     DISCORD_SERVER_OWNER_ROLE_ID(String.class, "discord.server_owner_role_id"),
     DISCORD_INVITE_LINK(String.class, "discord.invite_link"),
     //
-    PTERO_URL(String.class, "ptero.url"),
-    PTERO_DEFAULT_EMAIL_DOMAIN(String.class, "ptero.default_email_domain"),
-    PTERO_SERVER_UUID(String.class, "ptero.server_uuid"),
-    PTERO_ADMIN_KEY(String.class, "ptero.admin_key"),
-    PTERO_SERVER_KEY(String.class, "ptero.server_key"),
-    //
     SHOP_ENABLED(Boolean.class, "shop.enabled"),
     SHOP_TITLE(String.class, "shop.title"),
     SHOP_PREFIX(String.class, "shop.prefix"),
@@ -145,9 +139,6 @@ public enum ConfigEntry
     AUTOKICK_THRESHOLD(Double.class, "autokick.threshold"),
     AUTOKICK_TIME(Integer.class, "autokick.time"),
     //
-    LOGS_SECRET(String.class, "logs.secret"),
-    LOGS_URL(String.class, "logs.url"),
-    //
     FLATLANDS_GENERATE(Boolean.class, "flatlands.generate"),
     FLATLANDS_GENERATE_PARAMS(String.class, "flatlands.generate_params"),
     //
@@ -164,7 +155,6 @@ public enum ConfigEntry
     WILDCARD_BLOCKED_COMMANDS(List.class, "blocked_commands.wildcard"),
     FORBIDDEN_WORDS(List.class, "forbidden_words"),
     HOST_SENDER_NAMES(List.class, "host_sender_names"),
-    FAMOUS_PLAYERS(List.class, "famous_players"),
     ADMIN_ONLY_MODE(Boolean.class, "admin_only_mode"),
     ADMIN_INFO(List.class, "admininfo"),
     VOTING_INFO(List.class, "votinginfo"),
@@ -183,19 +173,6 @@ public enum ConfigEntry
     {
         this.type = type;
         this.configName = configName;
-    }
-
-    public static ConfigEntry findConfigEntry(String name)
-    {
-        name = name.toLowerCase().replace("_", "");
-        for (ConfigEntry entry : values())
-        {
-            if (entry.toString().toLowerCase().replace("_", "").equals(name))
-            {
-                return entry;
-            }
-        }
-        return null;
     }
 
     public Class<?> getType()

@@ -1,11 +1,11 @@
 package me.totalfreedom.totalfreedommod;
 
-import java.util.ArrayList;
-import java.util.List;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 import me.totalfreedom.totalfreedommod.player.FPlayer;
 import me.totalfreedom.totalfreedommod.util.FLog;
 import me.totalfreedom.totalfreedommod.util.FSync;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
@@ -13,13 +13,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 public class Muter extends FreedomService
 {
-
-    public final List<String> MUTED_PLAYERS = new ArrayList<>();
-
     @Override
     public void onStart()
     {
@@ -45,11 +41,10 @@ public class Muter extends FreedomService
         if (plugin.al.isAdminSync(player))
         {
             fPlayer.setMuted(false);
-            MUTED_PLAYERS.remove(player.getName());
             return;
         }
 
-        FSync.playerMsg(event.getPlayer(), ChatColor.RED + "You are muted.");
+        player.sendMessage(Component.text("You are muted.", NamedTextColor.RED));
         event.setCancelled(true);
     }
 
@@ -87,7 +82,7 @@ public class Muter extends FreedomService
 
         if (ConfigEntry.MUTED_BLOCKED_COMMANDS.getStringList().contains(cmdName))
         {
-            player.sendMessage(ChatColor.RED + "That command is blocked while you are muted.");
+            player.sendMessage(Component.text("That command is blocked while you are muted.", NamedTextColor.RED));
             event.setCancelled(true);
             return;
         }
@@ -96,18 +91,6 @@ public class Muter extends FreedomService
         if (ConfigEntry.ENABLE_PREPROCESS_LOG.getBoolean())
         {
             FLog.info(String.format("[PREPROCESS_COMMAND] %s(%s): %s", player.getName(), ChatColor.stripColor(player.getDisplayName()), message), true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerJoin(PlayerJoinEvent event)
-    {
-        Player player = event.getPlayer();
-        FPlayer playerdata = plugin.pl.getPlayer(player);
-
-        if (MUTED_PLAYERS.contains(player.getName()))
-        {
-            playerdata.setMuted(true);
         }
     }
 }
