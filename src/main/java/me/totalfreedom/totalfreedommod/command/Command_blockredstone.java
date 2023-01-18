@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 @CommandPermissions(level = Rank.ADMIN, source = SourceType.BOTH)
-@CommandParameters(description = "Blocks redstone on the server.", usage = "/<command>", aliases = "bre")
+@CommandParameters(description = "Blocks redstone on the server.", usage = "/<command>", aliases = "bre,toggleredstone")
 public class Command_blockredstone extends FreedomCommand
 {
 
