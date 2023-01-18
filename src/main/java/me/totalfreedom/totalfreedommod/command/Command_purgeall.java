@@ -20,7 +20,8 @@ public class Command_purgeall extends FreedomCommand
     public boolean run(CommandSender sender, Player playerSender, Command cmd, String commandLabel, String[] args, boolean senderIsConsole)
     {
         FUtil.adminAction(sender.getName(), "Purging all player data", true);
-
+        
+        //TODO Make Purgeall not include Item frames and Paintings.
         // Purge entities
         for (World world : Bukkit.getWorlds())
         {
