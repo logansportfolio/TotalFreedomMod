@@ -24,7 +24,7 @@ import org.bukkit.plugin.SimplePluginManager;
 
 public class CommandBlocker extends FreedomService
 {
-
+    private final Pattern whitespacePattern = Pattern.compile("^/?( +)(.*)?");
     private final Pattern flagPattern = Pattern.compile("(:([0-9]){5,})");
     //
     private final Map<String, CommandBlockerEntry> entryList = Maps.newHashMap();
@@ -156,6 +156,14 @@ public class CommandBlocker extends FreedomService
 
         // Format
         command = command.toLowerCase().trim();
+
+        // Whitespaces
+        Matcher whitespaceMatcher = whitespacePattern.matcher(command);
+        if (whitespaceMatcher.matches() && whitespaceMatcher.groupCount() == 2)
+        {
+            command = whitespaceMatcher.group(2);
+        }
+
         command = command.startsWith("/") ? command.substring(1) : command;
 
         // Check for plugin specific commands
