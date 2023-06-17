@@ -2,7 +2,6 @@ package me.totalfreedom.totalfreedommod;
 
 import io.papermc.lib.PaperLib;
 
-import java.util.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -32,10 +31,15 @@ public class MovementValidator extends FreedomService
     public void onPlayerTeleport(PlayerTeleportEvent event)
     {
         // Check absolute value to account for negatives
-        if (Math.abs(Objects.requireNonNull(event.getTo()).getX()) >= MAX_XYZ_COORD || Math.abs(event.getTo().getZ()) >= MAX_XYZ_COORD || Math.abs(event.getTo().getY()) >= MAX_XYZ_COORD)
+        if (isOutOfBounds(event.getTo()))
         {
             event.setCancelled(true); // illegal position, cancel it
         }
+    }
+
+    private boolean isOutOfBounds(final Location position)
+    {
+        return Math.abs(position.getX()) >= MAX_XYZ_COORD || Math.abs(position.getY()) >= MAX_XYZ_COORD || Math.abs(position.getZ()) >= MAX_XYZ_COORD;
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -52,7 +56,7 @@ public class MovementValidator extends FreedomService
             player.kickPlayer(ChatColor.RED + "You were moving too quickly!");
         }
         // Check absolute value to account for negatives
-        if (Math.abs(event.getTo().getX()) >= MAX_XYZ_COORD || Math.abs(event.getTo().getZ()) >= MAX_XYZ_COORD || Math.abs(event.getTo().getY()) >= MAX_XYZ_COORD)
+        if (isOutOfBounds(event.getTo()))
         {
             event.setCancelled(true);
             PaperLib.teleportAsync(player, player.getWorld().getSpawnLocation());
@@ -65,7 +69,7 @@ public class MovementValidator extends FreedomService
         final Player player = event.getPlayer();
 
         // Validate position
-        if (Math.abs(player.getLocation().getX()) >= MAX_XYZ_COORD || Math.abs(player.getLocation().getZ()) >= MAX_XYZ_COORD || Math.abs(player.getLocation().getY()) >= MAX_XYZ_COORD)
+        if (isOutOfBounds(player.getLocation()))
         {
             PaperLib.teleportAsync(player, player.getWorld().getSpawnLocation()); // Illegal position, teleport to spawn
         }
