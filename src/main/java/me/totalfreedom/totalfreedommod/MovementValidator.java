@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 public class MovementValidator extends FreedomService
 {
@@ -72,6 +73,25 @@ public class MovementValidator extends FreedomService
         if (isOutOfBounds(player.getLocation()))
         {
             PaperLib.teleportAsync(player, player.getWorld().getSpawnLocation()); // Illegal position, teleport to spawn
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerSpawn(PlayerSpawnLocationEvent event)
+    {
+        final Location playerSpawn = event.getSpawnLocation();
+        final Location worldSpawn = event.getPlayer().getWorld().getSpawnLocation();
+
+        // If the player's spawn is equal to the world's spawn, there is no need to check.
+        // This will also prevent any possible feedback loops pertaining to setting an out of bounds world spawn to the same world spawn.
+        if (playerSpawn == worldSpawn)
+        {
+            return;
+        }
+
+        if (isOutOfBounds(worldSpawn))
+        {
+            event.setSpawnLocation(worldSpawn);
         }
     }
 }
