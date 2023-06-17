@@ -44,8 +44,9 @@ public class MovementValidator extends FreedomService
         final Player player = event.getPlayer();
         Location from = event.getFrom();
         Location to = event.getTo();
+        double distance = from.distanceSquared(to);
 
-        if (to.getX() >= from.getX() + MAX_DISTANCE_TRAVELED || to.getY() >= from.getY() + MAX_DISTANCE_TRAVELED || to.getZ() >= from.getZ() + MAX_DISTANCE_TRAVELED)
+        if (distance >= MAX_DISTANCE_TRAVELED)
         {
             event.setCancelled(true);
             player.kickPlayer(ChatColor.RED + "You were moving too quickly!");
