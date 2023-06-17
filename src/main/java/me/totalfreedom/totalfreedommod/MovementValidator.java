@@ -2,7 +2,8 @@ package me.totalfreedom.totalfreedommod;
 
 import io.papermc.lib.PaperLib;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,7 +55,7 @@ public class MovementValidator extends FreedomService
         if (distance >= MAX_DISTANCE_TRAVELED)
         {
             event.setCancelled(true);
-            player.kickPlayer(ChatColor.RED + "You were moving too quickly!");
+            player.kick(Component.text("You were moving too quickly!", NamedTextColor.RED));
         }
         // Check absolute value to account for negatives
         if (isOutOfBounds(event.getTo()))
