@@ -35,6 +35,7 @@ public enum ConfigEntry
     AUTO_TP(Boolean.class, "allow.auto_tp"),
     AUTO_CLEAR(Boolean.class, "allow.auto_clear"),
     ALLOW_GRAVITY(Boolean.class, "allow.gravity"),
+    ALLOW_ITEM_DROPS(Boolean.class, "allow.item_drops"),
     //
     BLOCKED_CHATCODES(String.class, "blocked_chatcodes"),
     //

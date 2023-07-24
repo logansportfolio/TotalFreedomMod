@@ -234,6 +234,7 @@ allow:
   auto_tp: false
   auto_clear: false
   gravity: false
+  item_drops: false
 
 blocked_commands:
   #
